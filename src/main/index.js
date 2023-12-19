@@ -1,8 +1,9 @@
-import { app, shell, BrowserWindow } from 'electron'
+import { app, shell, BrowserWindow, ipcRenderer, ipcMain } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-
+import os from 'os'
+import uuid from 'uuid';
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -26,6 +27,20 @@ function createWindow() {
     return { action: 'deny' }
   })
 
+
+  // Get the device username
+  const username = os.userInfo().username;
+
+  // Generate a unique ID
+  const uniqueId = uuid.v4();
+
+  // Send the username and unique ID to the renderer process
+  console.log(username, uniqueId);
+
+  ipcMain.handle('device-info', async(event)=>{
+    return {username, uniqueId}
+  })
+
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -34,6 +49,7 @@ function createWindow() {
     mainWindow.loadFile(join(__dirname, '../renderer/index.html'))
   }
 }
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

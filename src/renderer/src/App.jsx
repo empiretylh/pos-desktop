@@ -1,14 +1,27 @@
 import Versions from './components/Versions'
 import icons from './assets/icons.svg'
+import { QueryClient, QueryClientProvider } from 'react-query'
+import AuthProvider from './context/AuthContextProvider';
+import Routes from './route/route';
+import axios from 'axios';
+import { domainURL } from './config/config';
+
+import 'bootstrap-icons/font/bootstrap-icons.css';
+
+
+axios.defaults.baseURL = domainURL
+
+const client = new  QueryClient();
+
+
 
 function App() {
   return (
-    <div className="h-screen bg-primary">
-      <div className="text-3xl font-bold underline">
-        <h1 className='text-3xl font-bold underline'>Hello</h1>
-
-      </div>
-    </div>
+   <QueryClientProvider client={client}>
+    <AuthProvider>
+      <Routes/>
+    </AuthProvider>
+   </QueryClientProvider>
   )
 }
 
