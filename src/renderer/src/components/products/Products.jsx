@@ -1,9 +1,9 @@
-import react, { useState, useEffect, useTransition } from 'react';
+import react, { useState, useEffect, useTransition, useRef } from 'react';
 import { useMutation } from 'react-query';
 import { APPNAME } from '../../config/config';
 import { IMAGE } from '../../config/image';
 import TextInput from '../custom_components/TextInput';
-import { login } from '../../server/api';
+import { login, postCategorys, postProducts } from '../../server/api';
 import { useAuth } from '../../context/AuthContextProvider';
 const { ipcRenderer } = window.electron
 import axios from 'axios';
@@ -16,6 +16,9 @@ import TopMoneyTable from './TopMoneyTable';
 import SaleChart from './SaleChart';
 import ProductTable from './ProductTable';
 import CustomButton from '../custom_components/CustomButton';
+import { useProductsData } from '../../context/ProductsDataProvider';
+import CategoryTable from './CategoryTable';
+import { useCategoryData } from '../../context/CategoryDataProvider';
 
 const Products = () => {
 
@@ -23,12 +26,119 @@ const Products = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const [selected, setSelected] = useState('Sales');
+    const [selected, setSelected] = useState('Products');
 
-    const { setToken } = useAuth();
+    const [searchtext, setSearchtext] = useState('');
+    const [sortby, setSortBy] = useState('none');
 
     const { t } = useTranslation();
 
+    const { product_data, data } = useProductsData();
+    const { category_data, data: category } = useCategoryData();
+
+    const [selectedRow, setSelectedRow] = useState(null);
+
+    const inputRef = useRef();
+
+
+    const PostProduct = useMutation(postProducts, {
+        onMutate: () => {
+            setLoading(true);
+
+        },
+        onSuccess: () => {
+            setLoading(false);
+            product_data.refetch();
+        },
+        onError: () => {
+            setLoading(false);
+
+        }
+    });
+
+    const PostCategory = useMutation(postCategorys, {
+        onMutate: () => {
+            setLoading(true);
+
+        },
+        onSuccess: () => {
+            setLoading(false);
+            category_data.refetch();
+        },
+        onError: () => {
+            setLoading(false);
+
+        }
+
+    })
+
+    const ProductSubmit = (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        let formData = {
+            name: form.name.value,
+            category: form.category.value,
+            barcode: form.barcode.value,
+            price: form.price.value,
+            cost: form.cost.value,
+            qty: form.qty.value,
+            supplier_name: form.supplier.value,
+            expiry_date: form.expire.value,
+            description: form.description.value,
+            pic: null,
+        };
+
+        let data = {};
+
+        for (let key in formData) {
+            if (formData[key] !== null && formData[key] !== '') {
+                data[key] = formData[key];
+            }
+        }
+
+
+        PostProduct.mutate(
+            data
+        );
+
+        form.reset();
+    }
+
+    const CategorySubmit = (e) => {
+        e.preventDefault();
+        const form = e.target;
+
+        let formData = {
+            title: form.title.value,
+        };
+
+        let data = {};
+
+        for (let key in formData) {
+            if (formData[key] !== null && formData[key] !== '') {
+                data[key] = formData[key];
+            }
+        }
+
+
+        PostCategory.mutate(
+            data
+        );
+
+        form.reset();
+    }
+
+    const productRowClick_Update = (item) => {
+        setSelectedRow(item);
+        inputRef.current.focus();
+        //selectall text input
+        inputRef.current.select();
+    }
+
+    const handleChange = (value, name) => {
+        setSelectedRow({ ...selectedRow, [name]: value });
+    }
 
 
     return (
@@ -36,13 +146,25 @@ const Products = () => {
             <Navigation />
             <Loading show={loading} />
             <div className="bg-white font-sans h-full w-full p-3 overflow-auto">
-                <div className="flex flex-row items-center sticky top-0 p-3 bg-white ">
+                <div className="flex flex-row items-center sticky bg-white " style={{
+                    top: -10,
+                }}>
                     <i className='bi bi-bag text-2xl mr-2'></i>
                     <h1 className='text-2xl font-bold'>{t('Products')}</h1>
 
                     <div className="flex flex-row w-full justify-center items-center">
-                        <CustomButton text={t('Add_Product')} icon={'bi bi-bag-plus mr-3 text-2xl'} textcolor='text-white mr-3' />
-                        <CustomButton text={t('Add_Category')} icon={'bi bi-bookmark-plus mr-3 text-2xl'} textcolor='text-white mr-3' />
+                        <CustomButton
+                            onClick={() => {
+                                setSelected('Products');
+                                inputRef.current.focus();
+                            }}
+                            text={t('Add_Product')} icon={'bi bi-bag-plus mr-3 text-2xl'} textcolor='text-white mr-3' />
+                        <CustomButton
+                            onClick={() => {
+                                setSelected('Category')
+                                inputRef.current.focus();
+                            }}
+                            text={t('Add_Category')} icon={'bi bi-bookmark-plus mr-3 text-2xl'} textcolor='text-white mr-3' />
                         <CustomButton text={t('Excel Export/Import')} icon={'bi bi-table mr-3 text-2xl'} textcolor='text-white mr-3' />
                         <CustomButton text={t('Change Price')} icon={'bi bi-percent mr-3 text-2xl'} textcolor='text-white mr-3' />
                     </div>
@@ -53,20 +175,79 @@ const Products = () => {
 
                 {/*Search Bar */}
                 <div className='grid grid-cols-3 gap-3 mt-3'>
+                    <div className="col-span-1 border p-2">
+                        {
+                            selected == 'Products' ?
+                                <form className="flex flex-col overflow-x-hidden overflow-y-auto" onSubmit={ProductSubmit} >
+
+                                    <label className="text-sm text-black font-bold">{t('ProductName')}</label>
+                                    <input value={selectedRow?.name} onChange={e=> handleChange(e.target.value, e.target.id)} ref={inputRef} type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('ProductName')} required id="name" />
+
+                                    <label className="text-sm text-black font-bold mt-1">{t('Barcode')}</label>
+                                    <input value={selectedRow?.barcode} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Barcode')} id="barcode" />
+
+                                    <label className="text-sm text-black font-bold mt-1">{t('Category')}</label>
+                                    <select value={selectedRow?.category} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2 mr-3 my-1" required id="category">
+                                        {category.map((item, index) => (
+                                            <option key={index} value={item.id}>{item.title}</option>
+                                        ))}
+                                    </select>
+
+                                    {
+                                        /* qty, price , cost , supplier name*/
+                                    }
+                                    <label className="text-sm text-black font-bold mt-1">{t('Quantity')}</label>
+                                    <input value={selectedRow?.qty} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Quantity')} required id="qty" />
+
+                                    <div className="flex space-x-4">
+                                        <div className="flex-1">
+                                            <label className="text-sm text-black font-bold mt-1">{t('Price4')}</label>
+                                            <input value={selectedRow?.price} onChange={e=> handleChange(e.target.value, e.target.id)}type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price4')} required id="price" />
+                                        </div>
+
+                                        <div className="flex-1">
+                                            <label className="text-sm text-black font-bold mt-1">{t('Price5')}</label>
+                                            <input value={selectedRow?.cost} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price5')} required id="cost" />
+                                        </div>
+                                    </div>
+                                    <label className="text-sm text-black font-bold mt-1">{t('Supplier_Name')}</label>
+                                    <input type="text" value={selectedRow?.supplier} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} id="supplier" />
+
+                                    {/*Expire Date */}
+                                    <label className="text-sm text-black font-bold mt-1">{t('Expire_Date')}</label>
+                                    <input type="date" value={selectedRow?.expiry_date} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Expire_Date')} id="expire" />
+
+                                    {/* Description */}
+                                    <label className="text-sm text-black font-bold mt-1">{t('Description')}</label>
+                                    <input type="text" value={selectedRow?.description} onChange={e=> handleChange(e.target.value, e.target.id)}className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Description')} id="description" />
+
+                                    <button className="bg-primary text-white rounded-md w-full p-2 mr-3 mt-1">{t('Add_Product')}</button>
+                                </form> :
+                                <form onSubmit={CategorySubmit} className="flex flex-col overflow-x-hidden overflow-y-auto">
+
+                                    <label className="text-sm text-black font-bold">{t('Category')}</label>
+                                    <input id="title" type="text" ref={inputRef} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Category')} required />
+
+
+                                    <button className="bg-primary text-white rounded-md w-full p-2 mr-3 mt-1">{t('Add_Category')}</button>
+                                </form>
+                        }
+
+                    </div>
                     <div className="col-span-2 border p-2">
                         <div className="flex flex-row items-center mt-3 w-full">
                             <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
-                            <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Products')} />
+                            <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Products')} onChange={(e) => setSearchtext(e.target.value)} />
                         </div>
 
                         <div>
                             {/* 2 tab Sales and Category if selected fill color */}
                             <div className="flex flex-row items-center mt-3">
-                                <button className={`border border-gray-300 ${selected == 'Sales' ? 'bg-primary text-white font-bold' : ''} rounded-md w-1/2 p-2 mr-3`}
+                                <button className={`border border-gray-300 ${selected == 'Products' ? "bg-primary text-white font-bold" : ''} rounded-md w-1/2 p-2 mr-3`}
                                     onClick={() => {
-                                        setSelected("Sales")
+                                        setSelected("Products")
                                     }}
-                                >{t('Sales')}</button>
+                                >{t('Products')}</button>
                                 <button
                                     onClick={() => {
                                         setSelected("Category")
@@ -74,10 +255,26 @@ const Products = () => {
                                     className={`border border-gray-300 ${selected == 'Category' ? 'bg-primary text-white font-bold' : ''} rounded-md w-1/2 p-2 mr-3`}>{t('Category')}</button>
                                 {/* Sort with select -option */}
                                 <h1 className='mx-2 w-[100px]'>{t('Sort By :')}</h1>
-                                <select className="border border-gray-300 rounded-md w-[200px] p-2 mr-3">
-                                    <option value="">{t('Name')}</option>
-                                    <option value="">{t('Price')}</option>
-                                    <option value="">{t('Quantity')}</option>
+                                <select
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="border border-gray-300 rounded-md w-[200px] p-2 mr-3">
+                                    {
+                                        selected == 'Products' ?
+                                            <>
+                                                <option value="name">{t('Name')}</option>
+                                                <option value="price">{t('Price4')}</option>
+                                                <option value="cost">{t('Price5')}</option>
+                                                <option value="qty">{t('Quantity')}</option>
+                                                <option value="expire">{t('Expire Date')}</option>
+                                            </>
+                                            :
+                                            <>
+                                                <option value="name">{t('Name')}</option>
+                                                <option value="products">{t('Products')}</option>
+                                            </>
+                                    }
+
+
                                 </select>
 
                             </div>
@@ -85,53 +282,21 @@ const Products = () => {
                         </div>
 
                         {/* Table */}
-                        <ProductTable/>
+                        {selected == 'Products' ?
+                            <ProductTable
+                                data={data}
+                                searchtext={searchtext}
+                                sortby={sortby}
+                                selectedRow={selectedRow}
+                                setSelectedRow={setSelectedRow}
+                                rowDoubleClick={productRowClick_Update} /> :
+                            <CategoryTable data={category} searchtext={searchtext} sortby={sortby} />
+                        }
                     </div>
 
-                    <div className="col-span-1 border p-2">
-                        <form className="flex flex-col overflow-x-hidden overflow-y-auto">
-                            <label className="text-lg font-bold">{t('Product')}</label>
 
-                            <label className="text-sm text-black font-bold">{t('ProductName')}</label>
-                            <input type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('ProductName')} required />
-
-                            <label className="text-sm text-black font-bold mt-1">{t('Barcode')}</label>
-                            <input type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Barcode')} />
-
-                            <label className="text-sm text-black font-bold mt-1">{t('Category')}</label>
-                            <select className="border border-gray-300 rounded-md w-full p-2 mr-3 my-1" required>
-                                <option value="">{t('Category')}</option>
-                                <option value="">{t('Category')}</option>
-                                <option value="">{t('Category')}</option>
-                            </select>
-
-                            {
-                                /* qty, price , cost , supplier name*/
-                            }
-                            <label className="text-sm text-black font-bold mt-1">{t('Quantity')}</label>
-                            <input type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Quantity')} required />
-
-                            <label className="text-sm text-black font-bold mt-1">{t('Price4')}</label>
-                            <input type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Price4')} required />
-
-                            <label className="text-sm text-black font-bold mt-1">{t('Price5')}</label>
-                            <input type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Price5')} required />
-
-                            <label className="text-sm text-black font-bold mt-1">{t('Supplier_Name')}</label>
-                            <input type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} />
-
-                            {/*Expire Date */}
-                            <label className="text-sm text-black font-bold mt-1">{t('Expire_Date')}</label>
-                            <input type="date" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Expire_Date')} />
-
-                            {/* Description */}
-                            <label className="text-sm text-black font-bold mt-1">{t('Description')}</label>
-                            <input type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Description')} />
-
-                            <button className="bg-primary text-white rounded-md w-full p-2 mr-3 mt-1">{t('Add_Product')}</button>
-                        </form>
-                    </div>
                 </div>
+
             </div>
         </div>
     )
