@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContextProvider";
 import Login from "../components/auth/Login";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Dashboard from "../components/dashboard/dashboard";
+import Products from "../components/products/Products";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -14,6 +15,10 @@ const Routes = () => {
     {
       path:'/',
       element:<Dashboard/>
+    },
+    {
+      path:'/products',
+      element:<Products/>
     }
 
     // {
@@ -90,3 +95,4 @@ const Routes = () => {
 };
 
 export default Routes;
+

@@ -7,6 +7,7 @@ import { login } from '../../server/api';
 import { useAuth } from '../../context/AuthContextProvider';
 const { ipcRenderer } = window.electron
 import axios from 'axios';
+import Loading from '../custom_components/Loading';
 
 const Login = () => {
 
@@ -33,6 +34,7 @@ const Login = () => {
         },
         onError:err=>{
             console.log(err)
+            setLoading(false);
             alert(err)
         }
     })
@@ -59,6 +61,7 @@ const Login = () => {
 
     return (
         <div className='w-full h-screen grid grid-cols-3 font-mono'>
+            <Loading show={loading} />
             <div className="bg-primary h-full col-span-2 text-white flex justify-center items-center">
                 <div className='flex flex-col items-center justify-center'>
                     <img src={IMAGE.app_icon} style={{ width: 200, height: 200 }} />
