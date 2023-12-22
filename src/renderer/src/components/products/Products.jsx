@@ -3,7 +3,7 @@ import { useMutation } from 'react-query';
 import { APPNAME } from '../../config/config';
 import { IMAGE } from '../../config/image';
 import TextInput from '../custom_components/TextInput';
-import { login, postCategorys, postProducts } from '../../server/api';
+import { login, postCategorys, postProducts, putProducts } from '../../server/api';
 import { useAuth } from '../../context/AuthContextProvider';
 const { ipcRenderer } = window.electron
 import axios from 'axios';
@@ -39,7 +39,7 @@ const Products = () => {
     const [selectedRow, setSelectedRow] = useState(null);
 
     const inputRef = useRef();
-
+    const productform = useRef();
 
     const PostProduct = useMutation(postProducts, {
         onMutate: () => {
@@ -72,8 +72,33 @@ const Products = () => {
 
     })
 
+    const PutProduct = useMutation(putProducts, {
+        onMutate: () => {
+            setLoading(true);
+            clearProductForm();
+        },
+        onSuccess: () => {
+            setLoading(false);
+            product_data.refetch();
+        },
+        onError: () => {
+            setLoading(false);
+
+        }
+
+    })
+
     const ProductSubmit = (e) => {
         e.preventDefault();
+
+        //if selectedRow is not null putproduct else postproduct
+        if (selectedRow?.id) {
+            //selectedRow remove pic 
+            delete selectedRow.pic;
+
+            return PutProduct.mutate(selectedRow);
+        }
+
         const form = e.target;
 
         let formData = {
@@ -129,7 +154,9 @@ const Products = () => {
         form.reset();
     }
 
+
     const productRowClick_Update = (item) => {
+        productform.current.reset();
         setSelectedRow(item);
         inputRef.current.focus();
         //selectall text input
@@ -138,6 +165,11 @@ const Products = () => {
 
     const handleChange = (value, name) => {
         setSelectedRow({ ...selectedRow, [name]: value });
+    }
+
+    const clearProductForm = () => {
+        setSelectedRow(null);
+        productform.current.reset();
     }
 
 
@@ -178,16 +210,25 @@ const Products = () => {
                     <div className="col-span-1 border p-2">
                         {
                             selected == 'Products' ?
-                                <form className="flex flex-col overflow-x-hidden overflow-y-auto" onSubmit={ProductSubmit} >
+                                <form ref={productform} className="flex flex-col overflow-x-hidden overflow-y-auto" onSubmit={ProductSubmit} >
+                                    <div className="flex flex-row">
+                                        <label className="text-xl text-black font-bold ">{t('Products')}</label>
 
-                                    <label className="text-sm text-black font-bold">{t('ProductName')}</label>
-                                    <input value={selectedRow?.name} onChange={e=> handleChange(e.target.value, e.target.id)} ref={inputRef} type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('ProductName')} required id="name" />
+                                        {/* Clear icon */}
+                                        <div onClick={clearProductForm} className="select-none ml-auto cursor-pointer bg-red-500 rounded-md px-2 text-white flex flex-row items-center">
+                                            <i onClick={clearProductForm} className="bi bi-x text-2xl text-white cursor-pointer"></i>
+                                            <label>Clear</label>
+                                        </div>
+
+                                    </div>
+                                    <label className="text-sm text-black font-bold mt-3">{t('ProductName')}</label>
+                                    <input value={selectedRow?.name} onChange={e => handleChange(e.target.value, e.target.id)} ref={inputRef} type="text" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('ProductName')} required id="name" />
 
                                     <label className="text-sm text-black font-bold mt-1">{t('Barcode')}</label>
-                                    <input value={selectedRow?.barcode} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Barcode')} id="barcode" />
+                                    <input value={selectedRow?.barcode} onChange={e => handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Barcode')} id="barcode" />
 
                                     <label className="text-sm text-black font-bold mt-1">{t('Category')}</label>
-                                    <select value={selectedRow?.category} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2 mr-3 my-1" required id="category">
+                                    <select value={selectedRow?.category} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2 mr-3 my-1" required id="category">
                                         {category.map((item, index) => (
                                             <option key={index} value={item.id}>{item.title}</option>
                                         ))}
@@ -197,31 +238,31 @@ const Products = () => {
                                         /* qty, price , cost , supplier name*/
                                     }
                                     <label className="text-sm text-black font-bold mt-1">{t('Quantity')}</label>
-                                    <input value={selectedRow?.qty} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Quantity')} required id="qty" />
+                                    <input value={selectedRow?.qty} onChange={e => handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Quantity')} required id="qty" />
 
                                     <div className="flex space-x-4">
                                         <div className="flex-1">
                                             <label className="text-sm text-black font-bold mt-1">{t('Price4')}</label>
-                                            <input value={selectedRow?.price} onChange={e=> handleChange(e.target.value, e.target.id)}type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price4')} required id="price" />
+                                            <input value={selectedRow?.price} onChange={e => handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price4')} required id="price" />
                                         </div>
 
                                         <div className="flex-1">
                                             <label className="text-sm text-black font-bold mt-1">{t('Price5')}</label>
-                                            <input value={selectedRow?.cost} onChange={e=> handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price5')} required id="cost" />
+                                            <input value={selectedRow?.cost} onChange={e => handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price5')} required id="cost" />
                                         </div>
                                     </div>
                                     <label className="text-sm text-black font-bold mt-1">{t('Supplier_Name')}</label>
-                                    <input type="text" value={selectedRow?.supplier} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} id="supplier" />
+                                    <input type="text" value={selectedRow?.supplier} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} id="supplier" />
 
                                     {/*Expire Date */}
                                     <label className="text-sm text-black font-bold mt-1">{t('Expire_Date')}</label>
-                                    <input type="date" value={selectedRow?.expiry_date} onChange={e=> handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Expire_Date')} id="expire" />
+                                    <input type="date" value={selectedRow?.expiry_date} onChange={e => handleChange(e.target.value, "expiry_date")} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Expire_Date')} id="expire" />
 
                                     {/* Description */}
                                     <label className="text-sm text-black font-bold mt-1">{t('Description')}</label>
-                                    <input type="text" value={selectedRow?.description} onChange={e=> handleChange(e.target.value, e.target.id)}className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Description')} id="description" />
+                                    <input type="text" value={selectedRow?.description == 'undefined' ? '' : selectedRow?.description} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Description')} id="description" />
 
-                                    <button className="bg-primary text-white rounded-md w-full p-2 mr-3 mt-1">{t('Add_Product')}</button>
+                                    <button className={`${selectedRow?.id ? "bg-green-800" : "bg-primary"} text-white rounded-md w-full p-2 mr-3 mt-1`}>{t(selectedRow?.id ? "Edit_Product" : "Add_Product")}</button>
                                 </form> :
                                 <form onSubmit={CategorySubmit} className="flex flex-col overflow-x-hidden overflow-y-auto">
 

@@ -42,7 +42,7 @@ export const postCategorys = (data) => {
 export const putProducts = (data) => {
     
         return axios
-            .put(`/api/products/${data.id}/`, data, {
+            .put(`/api/products/`, data, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

@@ -99,7 +99,7 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedRow, set
                             <tr
                                 onDoubleClick={() => rowDoubleClick(item)}
                                 key={index}
-                                className={`cursor-pointer hover:bg-slate-100 select-none ${selectedRow.id === item.id ? 'bg-blue-200' : ''}`}
+                                className={`cursor-pointer hover:bg-slate-100 select-none ${selectedRow?.id === item.id ? 'bg-blue-200' : ''}`}
                             >      <td className='border px-2 py-1 text-center'>{index + 1}</td>
                                 <td className='border px-2 py-1'>{item.name}</td>
 
