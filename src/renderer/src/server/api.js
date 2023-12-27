@@ -48,3 +48,38 @@ export const putProducts = (data) => {
                 },
             })
     }
+
+
+export const putCategorys = (data) => {
+    return axios.put(`/api/categorys/`, data);
+}
+
+export const deleteProducts = (data) => {
+    return axios.delete(`/api/products/`, {data : {id : data.id}});
+}
+
+export const deleteCategorys = (data) => {
+    return axios.delete(`/api/categorys/?id=${data.id}`);
+}
+
+export const changePrice = (data)=>{
+    return axios.put('/api/products/changewithperentage/', data);
+}
+
+export const getCustomer = (data)=>{
+    return axios.get('/api/customer/', data);
+}
+
+export const postCustomer = (data)=>{
+    return axios.post('/api/customer/', data);
+}
+
+
+export const postSales = (data) =>{
+    return axios.post('/api/sales/', data,{
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+      );
+}

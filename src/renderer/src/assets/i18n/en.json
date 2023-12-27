@@ -95,6 +95,10 @@
     "Payyan": "Total ",
     "savecustomer": "Save Customer",
     "Customer_Payment": "Customer Payment Amount",
-    "Supplier_Name": "Supplier Name"
+    "Supplier_Name": "Supplier Name",
+
+    "Update":"Update",
+    "RPDs" :"Related Products",
+    "item" : "item"
   }
 }

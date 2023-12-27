@@ -48,4 +48,14 @@ export const countProducts = (id) => {
     }
 }
 
+
+export const productsByCategory = (id) => {
+    const { data } = useProductsData();
+    if (data) {
+        const products = data.filter(item => item.category === id);
+        return products;
+    }
+}
+
+
 export default ProductsDataProvider;

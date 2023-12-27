@@ -1,28 +1,26 @@
-import react, { useState, useEffect, useTransition, useRef } from 'react';
-import { useMutation } from 'react-query';
-import { APPNAME } from '../../config/config';
-import { IMAGE } from '../../config/image';
-import TextInput from '../custom_components/TextInput';
-import { login, postCategorys, postProducts, putProducts } from '../../server/api';
-import { useAuth } from '../../context/AuthContextProvider';
-const { ipcRenderer } = window.electron
-import axios from 'axios';
-import Navigation from '../custom_components/Navigation';
-import Loading from '../custom_components/Loading';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import numberWithCommas from '../custom_components/NumberWithCommas';
-import PieChart from './PieChart';
-import TopMoneyTable from './TopMoneyTable';
-import SaleChart from './SaleChart';
-import ProductTable from './ProductTable';
-import CustomButton from '../custom_components/CustomButton';
-import { useProductsData } from '../../context/ProductsDataProvider';
-import CategoryTable from './CategoryTable';
+import { useMutation } from 'react-query';
 import { useCategoryData } from '../../context/CategoryDataProvider';
+import { useProductsData } from '../../context/ProductsDataProvider';
+import { deleteCategorys, deleteProducts, postCategorys, postProducts, putCategorys, putProducts } from '../../server/api';
+import { useAlertShow } from '../custom_components/AlertProvider';
+import CustomButton from '../custom_components/CustomButton';
+import Loading from '../custom_components/Loading';
+import Navigation from '../custom_components/Navigation';
+import numberWithCommas from '../custom_components/NumberWithCommas';
+import CategoryTable from './CategoryTable';
+import ChangePriceModal from './ChangePriceModal';
+import ExcelImportExport from './ExcelImportExport';
+import ProductTable from './ProductTable';
+import ProductsByCategoryView from './ProductsByCategoryView';
+const { ipcRenderer } = window.electron
 
 const Products = () => {
 
     const [showtype, setShowtype] = useState('today');
+
+    const { showConfirm, showInfo, showNoti } = useAlertShow();
 
     const [loading, setLoading] = useState(false);
 
@@ -37,9 +35,11 @@ const Products = () => {
     const { category_data, data: category } = useCategoryData();
 
     const [selectedRow, setSelectedRow] = useState(null);
+    const [selectedRow_category, setSelectedRow_category] = useState(null);
 
     const inputRef = useRef();
     const productform = useRef();
+    const categoryform = useRef();
 
     const PostProduct = useMutation(postProducts, {
         onMutate: () => {
@@ -48,13 +48,17 @@ const Products = () => {
         },
         onSuccess: () => {
             setLoading(false);
+            showNoti("Product Added Successfully");
             product_data.refetch();
         },
         onError: () => {
             setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500');
+
 
         }
     });
+
 
     const PostCategory = useMutation(postCategorys, {
         onMutate: () => {
@@ -63,14 +67,53 @@ const Products = () => {
         },
         onSuccess: () => {
             setLoading(false);
+            showNoti("Category Added Successfully");
             category_data.refetch();
         },
         onError: () => {
             setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500');
+        }
+
+    })
+
+
+    const DeleteProduct = useMutation(deleteProducts, {
+        onMutate: () => {
+            setLoading(true);
+            clearProductForm();
+
+        },
+        onSuccess: () => {
+            setLoading(false);
+            product_data.refetch();
+            showNoti("Product Deleted Successfully")
+        },
+        onError: () => {
+            setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500')
+        }
+
+    })
+
+    const DeleteCategory = useMutation(deleteCategorys, {
+        onMutate: () => {
+            setLoading(true);
+            clearCategoryForm();
+        },
+        onSuccess: () => {
+            setLoading(false);
+            category_data.refetch();
+            showNoti("Category Deleted Successfully");
+        },
+        onError: () => {
+            setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500');
 
         }
 
     })
+
 
     const PutProduct = useMutation(putProducts, {
         onMutate: () => {
@@ -80,10 +123,28 @@ const Products = () => {
         onSuccess: () => {
             setLoading(false);
             product_data.refetch();
+            showNoti("Product Updated Successfully");
         },
         onError: () => {
             setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500');
+        }
 
+    })
+
+    const PutCategory = useMutation(putCategorys, {
+        onMutate: () => {
+            setLoading(true);
+            clearCategoryForm();
+        },
+        onSuccess: () => {
+            setLoading(false);
+            category_data.refetch();
+            showNoti("Category Updated Successfully");
+        },
+        onError: () => {
+            setLoading(false);
+            showNoti("Error Occured", 'bi bi-x-circle-fill text-red-500');
         }
 
     })
@@ -132,6 +193,11 @@ const Products = () => {
 
     const CategorySubmit = (e) => {
         e.preventDefault();
+
+        if (selectedRow_category?.id) {
+            return PutCategory.mutate(selectedRow_category);
+        }
+
         const form = e.target;
 
         let formData = {
@@ -163,6 +229,12 @@ const Products = () => {
         inputRef.current.select();
     }
 
+
+    const categoryRowClick_Update = (item) => {
+        setSelectedRow_category(item);
+        inputRef.current.select();
+    }
+
     const handleChange = (value, name) => {
         setSelectedRow({ ...selectedRow, [name]: value });
     }
@@ -172,6 +244,64 @@ const Products = () => {
         productform.current.reset();
     }
 
+
+    const clearCategoryForm = () => {
+        setSelectedRow_category(null);
+        categoryform.current.reset();
+    }
+
+    const computeProductBalance = useMemo(() => {
+        if (data.length) {
+            const total = data.reduce((a, b) => a + (b.cost * b.qty), 0);
+            return total;
+        }
+    }, [data])
+
+
+    const handleCategoryChange = (value, name) => {
+        setSelectedRow_category({ ...selectedRow_category, [name]: value });
+    }
+
+
+    const [showExcelImport, setShowExcelImport] = useState(false);
+    const [showChangePirce, setShowChangePrice] = useState(false);
+
+    const DeleteProductButton = () => {
+        if (selectedRow?.id) {
+            showConfirm("Delete Product", "Are you sure to delete this product ? ", () => {
+                DeleteProduct.mutate({
+                    id: selectedRow?.id
+
+                })
+
+            });
+        }
+    }
+
+
+    const DeleteCategoryButton = () => {
+        if (selectedRow_category?.id) {
+            showConfirm("Delete Category", "Are you sure to delete this category ? if you delete this their related products will also deleted. ", () => {
+                DeleteCategory.mutate({
+                    id: selectedRow_category?.id
+                })
+            })
+        }
+    }
+
+    //pres ctrl delete to call deleteproductbutton 
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key === 'Delete') {
+                DeleteProductButton();
+                DeleteCategoryButton();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, [selectedRow])
 
     return (
         <div className='flex flex-row h-screen'>
@@ -197,10 +327,18 @@ const Products = () => {
                                 inputRef.current.focus();
                             }}
                             text={t('Add_Category')} icon={'bi bi-bookmark-plus mr-3 text-2xl'} textcolor='text-white mr-3' />
-                        <CustomButton text={t('Excel Export/Import')} icon={'bi bi-table mr-3 text-2xl'} textcolor='text-white mr-3' />
-                        <CustomButton text={t('Change Price')} icon={'bi bi-percent mr-3 text-2xl'} textcolor='text-white mr-3' />
+                        <CustomButton
+                            onClick={() => {
+                                setShowExcelImport(true);
+                            }}
+                            text={t('Excel Export/Import')} icon={'bi bi-table mr-3 text-2xl'} textcolor='text-white mr-3' />
+                        <CustomButton 
+                        onClick={()=>{
+                            setShowChangePrice(true);
+                        }}
+                        text={t('Change Price')} icon={'bi bi-percent mr-3 text-2xl'} textcolor='text-white mr-3' />
                     </div>
-                    <h1 className='text-lg font-bold text-right' style={{ width: 180 }}>103000 MMK</h1>
+                    <h1 className='text-lg font-bold text-right' style={{ width: 180 }}>{numberWithCommas(computeProductBalance)} MMK</h1>
 
 
                 </div>
@@ -251,9 +389,12 @@ const Products = () => {
                                             <input value={selectedRow?.cost} onChange={e => handleChange(e.target.value, e.target.id)} type="number" className="border border-gray-300 rounded-md w-full p-2 my-1" placeholder={t('Price5')} required id="cost" />
                                         </div>
                                     </div>
-                                    <label className="text-sm text-black font-bold mt-1">{t('Supplier_Name')}</label>
-                                    <input type="text" value={selectedRow?.supplier} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} id="supplier" />
-
+                                    {selectedRow?.id ? null :
+                                        <>
+                                            <label className="text-sm text-black font-bold mt-1">{t('Supplier_Name')}</label>
+                                            <input type="text" value={selectedRow?.supplier} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Supplier_Name')} id="supplier" />
+                                        </>
+                                    }
                                     {/*Expire Date */}
                                     <label className="text-sm text-black font-bold mt-1">{t('Expire_Date')}</label>
                                     <input type="date" value={selectedRow?.expiry_date} onChange={e => handleChange(e.target.value, "expiry_date")} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Expire_Date')} id="expire" />
@@ -262,17 +403,85 @@ const Products = () => {
                                     <label className="text-sm text-black font-bold mt-1">{t('Description')}</label>
                                     <input type="text" value={selectedRow?.description == 'undefined' ? '' : selectedRow?.description} onChange={e => handleChange(e.target.value, e.target.id)} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Description')} id="description" />
 
-                                    <button className={`${selectedRow?.id ? "bg-green-800" : "bg-primary"} text-white rounded-md w-full p-2 mr-3 mt-1`}>{t(selectedRow?.id ? "Edit_Product" : "Add_Product")}</button>
+                                    <button
+                                        type="submit"
+                                        className={`${selectedRow?.id ? "bg-green-800 hover:bg-green-900" : "bg-primary hover:bg-cyan-800   "} text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}>
+                                        {/* add icon and edit icon  */}
+                                        <i className={`bi ${selectedRow?.id ? "bi-pencil-square" : "bi-plus-square"} text-white mr-2`}></i>
+
+
+                                        {t(selectedRow?.id ? "Edit_Product" : "Add_Product")}
+
+                                    </button>
+
+                                    {selectedRow?.id ?
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                DeleteProductButton();
+                                            }}
+
+                                            className="bg-red-500  hover:bg-red-700 text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center">
+                                            {/* trash icon */}
+                                            <i className="bi bi-trash text-white mr-2"></i>
+                                            {t('Delete_Product')}
+
+                                        </button>
+                                        : null}
                                 </form> :
-                                <form onSubmit={CategorySubmit} className="flex flex-col overflow-x-hidden overflow-y-auto">
+                                <form ref={categoryform} onSubmit={CategorySubmit} className="flex flex-col overflow-x-hidden overflow-y-auto">
+                                    <div className="flex flex-row">
+                                        <label className="text-xl text-black font-bold ">{t('Category')}</label>
 
+                                        {/* Clear icon */}
+                                        <div onClick={clearCategoryForm} className="select-none ml-auto cursor-pointer bg-red-500 rounded-md px-2 text-white flex flex-row items-center">
+                                            <i onClick={clearCategoryForm} className="bi bi-x text-2xl text-white cursor-pointer"></i>
+                                            <label>Clear</label>
+                                        </div>
+
+                                    </div>
                                     <label className="text-sm text-black font-bold">{t('Category')}</label>
-                                    <input id="title" type="text" ref={inputRef} className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Category')} required />
+                                    <input
+                                        id="title"
+                                        value={selectedRow_category?.title}
+                                        onChange={e => handleCategoryChange(e.target.value, e.target.id)}
+                                        type="text"
+                                        ref={inputRef}
+                                        className="border border-gray-300 rounded-md w-full p-2  my-1" placeholder={t('Category')} required />
+
+                                    <button
+                                        type="submit"
+                                        className={`${selectedRow_category?.id ? "bg-green-800 hover:bg-green-900" : "bg-primary hover:bg-cyan-800   "} text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}>
+                                        {/* add icon and edit icon  */}
+                                        <i className={`bi ${selectedRow_category?.id ? "bi-pencil-square" : "bi-plus-square"} text-white mr-2`}></i>
 
 
-                                    <button className="bg-primary text-white rounded-md w-full p-2 mr-3 mt-1">{t('Add_Category')}</button>
+                                        {t(selectedRow_category?.id ? "Update" : "Add_Category")}
+
+                                    </button>
+
+                                    {selectedRow_category?.id ?
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                DeleteCategoryButton();
+                                            }}
+                                            className="bg-red-500  hover:bg-red-700 text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center">
+                                            {/* trash icon */}
+                                            <i className="bi bi-trash text-white mr-2"></i>
+                                            {t('Delete_Product')}
+
+                                        </button>
+                                        : null}
+
+                                    {selectedRow_category?.id ?
+                                        <ProductsByCategoryView category_id={selectedRow_category?.id} /> :
+                                        null
+
+                                    }
                                 </form>
                         }
+
 
                     </div>
                     <div className="col-span-2 border p-2">
@@ -331,7 +540,14 @@ const Products = () => {
                                 selectedRow={selectedRow}
                                 setSelectedRow={setSelectedRow}
                                 rowDoubleClick={productRowClick_Update} /> :
-                            <CategoryTable data={category} searchtext={searchtext} sortby={sortby} />
+                            <CategoryTable
+                                data={category}
+                                searchtext={searchtext}
+                                sortby={sortby}
+                                selectedRow={selectedRow_category}
+                                setSelectedRow={setSelectedRow_category}
+                                rowDoubleClick={categoryRowClick_Update}
+                            />
                         }
                     </div>
 
@@ -339,6 +555,8 @@ const Products = () => {
                 </div>
 
             </div>
+            <ExcelImportExport show={showExcelImport} setShow={setShowExcelImport} />
+            <ChangePriceModal show={showChangePirce} setShow={setShowChangePrice} />
         </div>
     )
 }

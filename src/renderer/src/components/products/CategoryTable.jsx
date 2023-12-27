@@ -15,7 +15,7 @@ const generateRandomData = (numItems) => {
     return data;
 };
 
-const CategoryTable = ({ data, searchtext = '', sortby = 'name' }) => {
+const CategoryTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick }) => {
     const { t } = useTranslation();
 
 
@@ -57,8 +57,12 @@ const CategoryTable = ({ data, searchtext = '', sortby = 'name' }) => {
                     </thead>
                     <tbody className='mt-1'>
                         {data ? filterData.map((item, index) => (
-                            <tr key={index}>
-                                <td className='border px-2 py-1'>{index+1}</td>
+                             <tr
+                             onDoubleClick={() => rowDoubleClick(item)}
+                             key={index}
+                             className={`cursor-pointer hover:bg-slate-100 select-none ${selectedRow?.id === item.id ? 'bg-blue-200' : ''}`}
+                         >
+                                <td className='border px-2 py-1'>{index + 1}</td>
                                 <td className='border px-2 py-1'>{item.title}</td>
                                 <td className='border px-2 py-1 text-right'>{countProducts(item.id)}</td>
                             </tr>

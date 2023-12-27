@@ -9,6 +9,9 @@ import './assets/i18n/i18n';
 import 'bootstrap-icons/font/bootstrap-icons.css';
 import ProductsDataProvider from './context/ProductsDataProvider';
 import CategoryDataProvider from './context/CategoryDataProvider';
+import AlertShowProvider from './components/custom_components/AlertProvider';
+import CustomerDataProvider from './context/CustomerProvider';
+import { CartContextProvider } from './components/Sales/CartContextProvier';
 
 
 axios.defaults.baseURL = domainURL
@@ -20,13 +23,19 @@ const client = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={client}>
-      <AuthProvider>
-        <CategoryDataProvider>
-          <ProductsDataProvider>
-            <Routes />
-          </ProductsDataProvider>
-        </CategoryDataProvider>
-      </AuthProvider>
+      <AlertShowProvider>
+        <AuthProvider>
+          <CategoryDataProvider>
+            <ProductsDataProvider>
+              <CustomerDataProvider>
+                <CartContextProvider>
+                  <Routes />
+                </CartContextProvider>
+              </CustomerDataProvider>
+            </ProductsDataProvider>
+          </CategoryDataProvider>
+        </AuthProvider>
+      </AlertShowProvider>
     </QueryClientProvider>
   )
 }

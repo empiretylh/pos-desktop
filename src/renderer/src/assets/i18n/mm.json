@@ -120,6 +120,10 @@
 
     "savecustomer":"အမည်ဖြင့်သိမ်းထားမည်",
     "Customer_Payment":"ရငွေ/ ပေးသည့်ငွေ",
-    "Supplier_Name":"Supplier အမည်"
+    "Supplier_Name":"Supplier အမည်",
+
+    "Update":"Update လုပ်မည်",
+    "RPDs" :"ဆက်စပ်နေသည့် ကုန်ပစ္စည်းများ",
+    "item" : "ခု"
   }
 }

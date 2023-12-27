@@ -5,6 +5,7 @@ import Login from "../components/auth/Login";
 import { ProtectedRoute } from "./ProtectedRoute";
 import Dashboard from "../components/dashboard/dashboard";
 import Products from "../components/products/Products";
+import Sales from "../components/Sales/Sales";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -13,13 +14,18 @@ const Routes = () => {
 
   let routes = [
     {
-      path:'/',
-      element:<Dashboard/>
+      path: '/',
+      element: <Dashboard />
     },
     {
-      path:'/products',
-      element:<Products/>
+      path: '/products',
+      element: <Products />
+    },
+    {
+      path: '/sales',
+      element: <Sales />
     }
+
 
     // {
     //   path: "/dashboard",
@@ -66,7 +72,7 @@ const Routes = () => {
     {
       path: "/",
       element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
-      errorElement: <Navigate to="/"/>,
+      errorElement: <Navigate to="/" />,
       children: routes,
     },
   ];
@@ -74,17 +80,17 @@ const Routes = () => {
   const routesForPublic = [
     {
       path: "/login",
-      element: <Login/>,
-      errorElement: <Navigate to="/"/>
+      element: <Login />,
+      errorElement: <Navigate to="/" />
     },
   ];
 
-  
+
   // Combine and conditionally include routes based on authentication status
   const router =
     useMemo(() => (
       createBrowserRouter([
-        ...routesForAuthenticatedOnly, 
+        ...routesForAuthenticatedOnly,
         ...routesForPublic,
       ])
     ), [token]);

@@ -1,0 +1,6 @@
+focus on search bar = Alt + f
+focus on sales form =  Alt + c
+close modal (Alert & Notification) = ESC
+Create Data on Form (Products, Sales, ...) = ENTER
+
+Select Product Item on Table = Tab

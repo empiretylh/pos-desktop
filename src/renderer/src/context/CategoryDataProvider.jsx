@@ -43,7 +43,7 @@ export const IDToCategory = (id) => {
     const { data } = useCategoryData();
     if (data) {
         const category = data.find(item => item.id === id);
-        return category.title;
+        return category?.title;
     }
 }
 
