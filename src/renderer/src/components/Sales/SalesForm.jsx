@@ -17,7 +17,7 @@ const SalesForm = () => {
     const salesForm = useRef(null);
     const inputRef = useRef(null);
 
-  
+
     const [loading, setLoading] = useState(false);
 
     const [customername, setCustomername] = useState('');
@@ -106,7 +106,7 @@ const SalesForm = () => {
             setIsSaveCustomer(false);
             customer_data.refetch();
             product_data.refetch();
-            showNoti(t('RSC'),'bi bi-check-circle text-green-500')
+            showNoti(t('RSC'), 'bi bi-check-circle text-green-500')
 
 
 
@@ -193,6 +193,22 @@ const SalesForm = () => {
         product_data.refetch();
 
     }
+
+    // press alt + c to focus on customer name input
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.altKey && e.key === 'c') {
+                inputRef.current.focus();
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }
+        , [inputRef])
 
 
 

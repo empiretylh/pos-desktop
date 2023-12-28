@@ -22,10 +22,28 @@ const nav = [
         icon: "bi bi-cart",
         link: "/sales",
     },
+  
+    {
+        name: "Other Income",
+        icon: "bi bi-wallet",
+        link: "/otherincome",
+    },
+   
     {
         name: "Expense",
         icon: "bi bi-stack",
         link: "/expense",
+    },
+   
+    {
+        name: "Customer",
+        icon: "bi bi-person",
+        link: "/otherincome",
+    },
+    {
+        name: "Supplier",
+        icon: "bi bi-box",
+        link: "/otherincome",
     },
     {
         name: "Report",
@@ -69,7 +87,7 @@ const Navigation = () => {
                         to={item.link}
                     >
                         <i className={`${item.icon} text-2xl`}></i>
-                        <p className={"text-[11px]"}>{item.name}</p>
+                        <p className={"text-[11px] text-center"}>{item.name}</p>
                     </Link>
                 ))}
             </ul>

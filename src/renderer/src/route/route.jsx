@@ -6,6 +6,8 @@ import { ProtectedRoute } from "./ProtectedRoute";
 import Dashboard from "../components/dashboard/dashboard";
 import Products from "../components/products/Products";
 import Sales from "../components/Sales/Sales";
+import Expense from "../components/Expense/Expense";
+import OtherIncome from "../components/custom_components/OtherIncome/OtherIncome";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -24,6 +26,14 @@ const Routes = () => {
     {
       path: '/sales',
       element: <Sales />
+    },
+    {
+      path:'/expense',
+      element:<Expense/>
+    },
+    {
+      path:'/otherincome',
+      element:<OtherIncome/>
     }
 
 

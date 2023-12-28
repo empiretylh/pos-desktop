@@ -40,14 +40,14 @@ export const postCategorys = (data) => {
 }
 
 export const putProducts = (data) => {
-    
-        return axios
-            .put(`/api/products/`, data, {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                },
-            })
-    }
+
+    return axios
+        .put(`/api/products/`, data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        })
+}
 
 
 export const putCategorys = (data) => {
@@ -55,31 +55,68 @@ export const putCategorys = (data) => {
 }
 
 export const deleteProducts = (data) => {
-    return axios.delete(`/api/products/`, {data : {id : data.id}});
+    return axios.delete(`/api/products/`, { data: { id: data.id } });
 }
 
 export const deleteCategorys = (data) => {
     return axios.delete(`/api/categorys/?id=${data.id}`);
 }
 
-export const changePrice = (data)=>{
+export const changePrice = (data) => {
     return axios.put('/api/products/changewithperentage/', data);
 }
 
-export const getCustomer = (data)=>{
+export const getCustomer = (data) => {
     return axios.get('/api/customer/', data);
 }
 
-export const postCustomer = (data)=>{
+export const postCustomer = (data) => {
     return axios.post('/api/customer/', data);
 }
 
 
-export const postSales = (data) =>{
-    return axios.post('/api/sales/', data,{
+export const postSales = (data) => {
+    return axios.post('/api/sales/', data, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+            'Content-Type': 'multipart/form-data',
         },
-      }
-      );
+    }
+    );
+}
+
+export const postExpense = (data) => {
+    return axios.post('/api/expenses/', data);
+}
+
+export const getExpense = ({ queryKey }) => {
+    const [_, type, time, startd, endd] = queryKey;
+    return axios.get(`/api/expenses/?type=${type}&time=${time}&startd=${startd}&endd=${endd}`);
+
+}
+
+export const putExpense = (data) => {
+    return axios.put('/api/expenses/', data);
+}
+
+export const deleteExpense = (data) => {
+    return axios.delete('/api/expenses/?id=' + data.id);
+}
+
+export const postOtherIncome = (data)=>{
+    return axios.post('/api/otherincome/', data);   
+}
+
+export const getOtherIncome = ({ queryKey }) => {
+    const [_, type, time, startd, endd] = queryKey;
+    return axios.get(`/api/otherincome/?type=${type}&time=${time}&startd=${startd}&endd=${endd}`);
+
+}
+
+export const putOtherIncome = (data) => {
+    return axios.put('/api/otherincome/', data);
+}
+
+
+export const deleteOtherIncome = (data) => {
+    return axios.delete('/api/otherincome/?id=' + data.id);
 }

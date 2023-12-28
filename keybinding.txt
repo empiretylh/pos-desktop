@@ -4,3 +4,7 @@ close modal (Alert & Notification) = ESC
 Create Data on Form (Products, Sales, ...) = ENTER
 
 Select Product Item on Table = Tab
+
+Delete Products & Category  = Ctrl + Del
+
+Clear form = Alt + Del
