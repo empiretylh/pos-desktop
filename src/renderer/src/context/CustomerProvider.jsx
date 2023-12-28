@@ -1,7 +1,7 @@
 import react, { createContext, useContext, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContextProvider';
 import { useQuery } from 'react-query';
-import {  getCustomer } from '../server/api';
+import { getCustomer } from '../server/api';
 
 const CustomerDataContext = createContext();
 
@@ -39,5 +39,12 @@ const CustomerDataProvider = ({ children }) => {
 
 export const useCustomerData = () => useContext(CustomerDataContext);
 
+export const onlyCustomerInfo = () => {
+    const { data } = useCustomerData();
+    if (data) {
+        return data.map(item => ({ id: item.id, name: item.name, description: item.description }))
+    }
+}
 
-export default CustomerDataProvider;
+
+    export default CustomerDataProvider;

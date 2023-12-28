@@ -38,7 +38,7 @@ const nav = [
     {
         name: "Customer",
         icon: "bi bi-person",
-        link: "/otherincome",
+        link: "/customer",
     },
     {
         name: "Supplier",

@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import numberWithCommas from '../NumberWithCommas';
+import numberWithCommas from '../custom_components/NumberWithCommas';
 
 const generateRandomData = (numItems) => {
     const data = [];
@@ -13,12 +13,13 @@ const generateRandomData = (numItems) => {
     return data;
 };
 
-const OtherIncomeTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick }) => {
+const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick }) => {
     const { t } = useTranslation();
 
 
     const filterData = useMemo(() => {
         if (data) {
+            console.log(data);
             const sorted_data = data.sort((a, b) => {
                 if (sortby === 'name') {
                     return a.name.localeCompare(b.name);
@@ -50,7 +51,7 @@ const OtherIncomeTable = ({ data, searchtext = '', sortby = 'name', selectedRow,
             )
 
             return sorted_data.filter(item => {
-                if (item.title.toLowerCase()?.includes(searchtext.toLowerCase())) {
+                if (item?.customerName?.toLowerCase()?.includes(searchtext.toLowerCase()) || item?.voucherNumber?.toLowerCase()?.includes(searchtext.toLowerCase())) {
                     return item;
                 }
             })
@@ -68,11 +69,14 @@ const OtherIncomeTable = ({ data, searchtext = '', sortby = 'name', selectedRow,
                         <tr>
                             <th className='border px-2 py-2'>{t('No')}</th>
 
-                            <th className='border px-2 py-2'>{t('Title')}</th>
-
-                            <th className='border px-2 py-2'>{t('Price')}</th>
+                            <th className='border px-2 py-2'>{t('Receipt_Number')}</th>
+                            <th className='border px-2 py-2'>{t('Name')}</th>
+                            <th className='border px-2 py-2'>{t('Total_Amount')}</th>
+                            <th className='border px-2 py-2'>{t('Customer_Payment')}</th>
+                            <th className='border px-2 py-2'>{t('TRemaing')}</th>
                             <th className='border px-2 py-2'>{t('Date')}</th>
-                            <th className='border px-2 py-1'>{t('Description')}</th>
+                            <th className='border px-2 py-2'></th>
+
                         </tr>
                     </thead>
                     <tbody className='mt-1'>
@@ -80,15 +84,24 @@ const OtherIncomeTable = ({ data, searchtext = '', sortby = 'name', selectedRow,
                             <tr
                                 onDoubleClick={() => rowDoubleClick(item)}
                                 key={index}
-                                className={`cursor-pointer hover:bg-slate-100 select-none ${selectedRow?.id === item.id ? 'bg-blue-200' : ''}`}
+                                className={`cursor-pointer hover:bg-slate-100 select-none`}
                             >      <td className='border px-2 py-1 text-center'>{index + 1}</td>
-                                <td className='border px-2 py-1'>{item.title}</td>
+                                <td className='border px-2 py-1'>{item.voucherNumber}</td>
+                                <td className='border px-2 py-1'>{item.customerName}</td>
 
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(item.price)}</td>
 
+
+                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal))}</td>
+                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.customer_payment))}</td>
+                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal) - parseInt(item.customer_payment))}</td>
                                 <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
-                                <td className='border px-2 py-1 text-center'>{item.description}</td>
+                                <td claassName='border px-2 py-1 text-center'>
+                                    <button
+                                        onClick={() => setSelectedRow(item)}
+                                        className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 text-center w-full'
 
+                                    >{t('Set Payment')}</button>
+                                </td>
                             </tr>
                         )) :
                             <tr>
@@ -102,4 +115,4 @@ const OtherIncomeTable = ({ data, searchtext = '', sortby = 'name', selectedRow,
     );
 }
 
-export default OtherIncomeTable;
+export default CustomerVoucherTable;

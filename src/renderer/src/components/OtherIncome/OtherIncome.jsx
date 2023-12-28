@@ -2,12 +2,12 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'react-query';
 import OtherIncomeTable from './OtherIncomeTable';
-import { useOtherIncome } from '../../../context/OtherIncomeDataProvider';
-import { deleteOtherIncome, postOtherIncome, putOtherIncome } from '../../../server/api';
-import { useAlertShow } from '../AlertProvider';
-import Loading from '../Loading';
-import Navigation from '../Navigation';
-import numberWithCommas from '../NumberWithCommas';
+import { useOtherIncome } from '../../context/OtherIncomeDataProvider';
+import { deleteOtherIncome, postOtherIncome, putOtherIncome } from '../../server/api';
+import { useAlertShow } from '../custom_components/AlertProvider';
+import Loading from '../custom_components/Loading';
+import Navigation from '../custom_components/Navigation';
+import numberWithCommas from '../custom_components/NumberWithCommas';
 const { ipcRenderer } = window.electron
 
 
