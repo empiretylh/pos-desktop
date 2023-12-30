@@ -8,7 +8,10 @@ import { useAlertShow } from '../custom_components/AlertProvider';
 import Loading from '../custom_components/Loading';
 import Navigation from '../custom_components/Navigation';
 import numberWithCommas from '../custom_components/NumberWithCommas';
-import { useCustomerData } from '../../context/CustomerProvider';
+import { SalesByCustomerName, useCustomerData } from '../../context/CustomerProvider';
+import AddCustomer from './CustomerAddModal';
+import SetPaymentModal from './SetPaymentModal';
+import CustomerEditModal from './CustomerEditModal';
 const { ipcRenderer } = window.electron
 
 
@@ -62,8 +65,8 @@ const Customer = () => {
     }, [data])
 
 
-
-
+    const [showPayment, setShowPayment] = useState(false);
+    const [selectedPayment, setSelectedPayment] = useState([]);
 
 
     useEffect(() => {
@@ -102,6 +105,11 @@ const Customer = () => {
         }
     }, [customer_searchtext, data])
 
+    const [showCustomer, setShowCustomer] = useState(false);
+
+    const salesData = SalesByCustomerName(selectedSales?.id);
+    const [showEditCustomer, setShowEditCustomer] = useState(false);
+
     return (
         <div className='flex flex-row h-screen'>
             <Navigation />
@@ -132,8 +140,7 @@ const Customer = () => {
                             <button
                                 className='bg-primary hover:bg-blue-600 text-white rounded-md p-2 whitespace-nowrap'
                                 onClick={() => {
-                                    setSelectedRow(null);
-                                    inputRef.current.focus();
+                                    setShowCustomer(true);
                                 }}
                             >
                                 <label className="whitespace-nowrap">
@@ -168,13 +175,19 @@ const Customer = () => {
                     <div className="col-span-2 border p-2">
                         <div className='flex flex-col items-center'>
                             <div className='flex flex-row items-center w-full justify-between'>
-                                {selectedSales && <h1 className="text-md font-bold whitespace-nowrap mr-2">{selectedSales?.name}'s Voucher List</h1>}
+                                <div className="flex flex-col items-center">
+
+                                    {selectedSales && <div><h1 className="text-md font-bold whitespace-nowrap mr-2">{selectedSales?.name}'s Voucher List</h1>
+                                        <p>{selectedSales.description}</p></div>
+                                    }
+
+                                </div>
                                 {/* Edit and Delete Button */}
                                 <div className='flex flex-row items-center'>
                                     <button className='bg-primary hover:bg-blue-600 text-white rounded-md p-2 whitespace-nowrap mr-2'
                                         onClick={() => {
-                                            setSelectedRow(null);
-                                            inputRef.current.focus();
+                                            setShowEditCustomer(true);
+                                            
                                         }}
                                     >
                                         <i className='bi bi-pencil mr-1'></i>
@@ -203,12 +216,16 @@ const Customer = () => {
                         </div>
                         {selectedSales ?
                             <CustomerVoucherTable
-                                data={selectedSales.sales}
+                                data={salesData}
                                 searchtext={searchtext}
                                 sortby={sortby}
                                 selectedRow={selectedRow}
                                 setSelectedRow={setSelectedRow}
-                                rowDoubleClick={productRowClick_Update} /> :
+                                rowDoubleClick={productRowClick_Update}
+                                setShowPayment={setShowPayment}
+                            />
+
+                            :
                             <div>
                                 <h1 className='text-2xl text-center mt-10'>No Customer Selected</h1>
                             </div>
@@ -219,6 +236,9 @@ const Customer = () => {
                 </div>
 
             </div>
+            <AddCustomer show={showCustomer} setShow={setShowCustomer} />
+            <SetPaymentModal show={showPayment} setShow={setShowPayment} payment_data={selectedRow} />
+            <CustomerEditModal show={showEditCustomer} setShow={setShowEditCustomer} oldcustomer={selectedSales} />
 
         </div>
     )

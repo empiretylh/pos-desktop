@@ -46,5 +46,15 @@ export const onlyCustomerInfo = () => {
     }
 }
 
+// salesbycustomername
+export const SalesByCustomerName = (id) => {
+    const { data } = useCustomerData();
+    if (data) {
+        const customer = data.find(item => item.id == id);
+        return customer?.sales;
+    }
+}
+
+
 
     export default CustomerDataProvider;

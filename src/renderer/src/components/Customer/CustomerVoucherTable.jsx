@@ -13,7 +13,7 @@ const generateRandomData = (numItems) => {
     return data;
 };
 
-const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick }) => {
+const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment }) => {
     const { t } = useTranslation();
 
 
@@ -21,32 +21,9 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
         if (data) {
             console.log(data);
             const sorted_data = data.sort((a, b) => {
-                if (sortby === 'name') {
-                    return a.name.localeCompare(b.name);
-                } else if (sortby === 'price') {
-                    return b.price - a.price;
-                } else if (sortby === 'cost') {
-                    return b.cost - a.cost;
-                } else if (sortby === 'qty') {
-                    return a.qty - b.qty;
-                } else if (sortby === 'expire') {
-                    // two date compare
-                    if (a.expiry_date && b.expiry_date) {
-                        const date1 = new Date(a.expiry_date);
-                        const date2 = new Date(b.expiry_date);
-                        return date1 - date2;
-                    } else if (a.expiry_date) {
-                        return -1;
-                    }
-                    else if (b.expiry_date) {
-                        return 1;
-                    } else {
-                        return 0;
-                    }
-                } else {
-                    return 0;
-
-                }
+                let rem1 = parseInt(a.grandtotal) - parseInt(a.customer_payment);
+                let rem2 = parseInt(b.grandtotal) - parseInt(b.customer_payment);
+                return rem2 - rem1;
             }
             )
 
@@ -97,7 +74,7 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                                 <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
                                 <td claassName='border px-2 py-1 text-center'>
                                     <button
-                                        onClick={() => setSelectedRow(item)}
+                                        onClick={() => { setSelectedRow(item); setShowPayment(true) }}
                                         className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 text-center w-full'
 
                                     >{t('Set Payment')}</button>

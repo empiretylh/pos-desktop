@@ -120,3 +120,16 @@ export const putOtherIncome = (data) => {
 export const deleteOtherIncome = (data) => {
     return axios.delete('/api/otherincome/?id=' + data.id);
 }
+
+
+export const salesSetPayment = (data) => {
+    return axios.put('/api/customer/', data);
+}
+
+export const putCustomer = (data) => {
+    return axios.put('/api/customer/', data);
+}
+
+export const deleteCustomer =  (data)=>{
+    return axios.delete('/api/customer/?customerid='+data.id);
+}
