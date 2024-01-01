@@ -400,8 +400,8 @@ const SalesForm = () => {
                             type="submit"
                             onClick={onSubmit}
                             className="bg-primary text-white rounded-md p-2 mt-2 w-full">
-                            <i className="bi bi-receipt text-md select-none cursor-pointer" onClick={onSubmit}></i>{' '}
-                            <label className="text-md font-mono select-none cursor-pointer" onClick={onSubmit}>Create Receipt</label>
+                            <i className="bi bi-receipt text-md select-none cursor-pointer"></i>{' '}
+                            <label className="text-md font-mono select-none cursor-pointer">Create Receipt</label>
                         </button>
 
                     </div>

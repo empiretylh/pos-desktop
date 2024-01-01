@@ -1,6 +1,9 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import numberWithCommas from '../custom_components/NumberWithCommas';
+import { deleteCustomer, deleteVoucherfromCustomer } from '../../server/api';
+import { useMutation } from 'react-query';
+import { useCustomerData } from '../../context/CustomerProvider';
 
 const generateRandomData = (numItems) => {
     const data = [];
@@ -13,7 +16,7 @@ const generateRandomData = (numItems) => {
     return data;
 };
 
-const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment }) => {
+const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment, customerid}) => {
     const { t } = useTranslation();
 
 
@@ -36,6 +39,21 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
     }, [data, searchtext, sortby])
 
     const defaultdata = generateRandomData(10);
+
+    const {customer_data} = useCustomerData();
+
+    const removeVoucher = useMutation(deleteVoucherfromCustomer, {
+        onSuccess: () => {
+            customer_data.refetch();
+            showNoti("Successfully Removed Voucher")
+        },
+        onError: () => {
+            showNoti("Failed to Delete Customer", 'bi bi-x-circle-fill text-red-500')
+        }
+
+    })
+
+
     return (
         <div className={`w-full overflow-auto my-2`} style={{
             height: "calc(100vh - 200px)"
@@ -73,11 +91,19 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                                 <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal) - parseInt(item.customer_payment))}</td>
                                 <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
                                 <td claassName='border px-2 py-1 text-center'>
-                                    <button
-                                        onClick={() => { setSelectedRow(item); setShowPayment(true) }}
-                                        className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 text-center w-full'
+                                    {parseInt(item.grandtotal) - parseInt(item.customer_payment) == 0 ?
+                                        <button
+                                            onClick={() => { 
+                                                removeVoucher.mutate({ customerid : customerid , sales : item.receiptNumber})
+                                             }}
+                                            className='px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 text-center w-full'
 
-                                    >{t('Set Payment')}</button>
+                                        >Remove</button>
+                                        : <button
+                                            onClick={() => { setSelectedRow(item); setShowPayment(true) }}
+                                            className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 text-center w-full'
+
+                                        >{t('Set Payment')}</button>}
                                 </td>
                             </tr>
                         )) :

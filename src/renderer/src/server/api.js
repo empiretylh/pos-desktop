@@ -133,3 +133,12 @@ export const putCustomer = (data) => {
 export const deleteCustomer =  (data)=>{
     return axios.delete('/api/customer/?customerid='+data.id);
 }
+
+export const deleteVoucherfromCustomer = (data)=>{
+    return axios.delete('/api/customer/?customerid='+data.customerid+'&sales='+data.sales);
+}
+
+export const getSales = ({ queryKey }) => {
+    const [_, type, time, startd, endd] = queryKey;
+    return axios.get(`/api/sales/?type=${type}&time=${time}&startd=${startd}&endd=${endd}`);
+}

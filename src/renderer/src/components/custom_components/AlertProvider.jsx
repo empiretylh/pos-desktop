@@ -102,7 +102,7 @@ const AlertShowProvider = ({ children }) => {
             {/* */}
 
             {informshow && (
-                <div className="fixed inset-0 flex items-center justify-center z-10 rounded">
+                <div className="fixed inset-0 bg-gray-500 bg-opacity-50  flex items-center justify-center z-10 rounded">
                     <div className="bg-white rounded shadow-lg w-64">
                         <div className="px-6 py-4">
                             <h2 className="text-xl">{infotitle}</h2>
@@ -122,7 +122,7 @@ const AlertShowProvider = ({ children }) => {
             )}
 
             {yesnodialogshow && (
-                <div className="fixed inset-0 flex items-center justify-center z-10 rounded">
+                <div className="fixed inset-0 flex bg-gray-500 bg-opacity-50 items-center justify-center z-10 rounded">
                     <div className="bg-white rounded shadow-lg max-w-90">
                         <div className="px-6 py-4">
                             <h2 className="text-xl">{yesnodialogtitle}</h2>
