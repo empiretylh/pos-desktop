@@ -14,6 +14,7 @@ import CustomerDataProvider from './context/CustomerProvider';
 import { CartContextProvider } from './components/Sales/CartContextProvier';
 import ExpenseDataProvider from './context/ExpenseDataProvider';
 import OtherIncomeDataProvider from './context/OtherIncomeDataProvider';
+import SupplierDataProvider from './context/SupplierProvider';
 
 
 axios.defaults.baseURL = domainURL
@@ -28,17 +29,20 @@ function App() {
       <AlertShowProvider>
         <AuthProvider>
           <CategoryDataProvider>
-            <ProductsDataProvider>
-              <ExpenseDataProvider>
-                <OtherIncomeDataProvider>
-                <CustomerDataProvider>
-                  <CartContextProvider>
-                    <Routes />
-                  </CartContextProvider>
-                </CustomerDataProvider>
-                </OtherIncomeDataProvider>
-              </ExpenseDataProvider>
-            </ProductsDataProvider>
+            <SupplierDataProvider>
+              <ProductsDataProvider>
+                <ExpenseDataProvider>
+                  <OtherIncomeDataProvider>
+                    <CustomerDataProvider>
+                      <CartContextProvider>
+
+                        <Routes />
+                      </CartContextProvider>
+                    </CustomerDataProvider>
+                  </OtherIncomeDataProvider>
+                </ExpenseDataProvider>
+              </ProductsDataProvider>
+            </SupplierDataProvider>
           </CategoryDataProvider>
         </AuthProvider>
       </AlertShowProvider>

@@ -43,7 +43,7 @@ const nav = [
     {
         name: "Supplier",
         icon: "bi bi-box",
-        link: "/otherincome",
+        link: "/supplier",
     },
     {
         name: "Report",

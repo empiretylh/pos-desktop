@@ -1,10 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import numberWithCommas from '../custom_components/NumberWithCommas';
-import { deleteCustomer, deleteVoucherfromCustomer } from '../../server/api';
+import { deleteCustomer, deleteProductsFromSupplier, deleteSupplier, deleteVoucherfromCustomer } from '../../server/api';
 import { useMutation } from 'react-query';
 import { useCustomerData } from '../../context/CustomerProvider';
 import { useAlertShow } from '../custom_components/AlertProvider';
+import { useSupplierData } from '../../context/SupplierProvider';
 
 const generateRandomData = (numItems) => {
     const data = [];
@@ -17,22 +18,19 @@ const generateRandomData = (numItems) => {
     return data;
 };
 
-const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment, customerid}) => {
+const SupplierVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment, customerid}) => {
     const { t } = useTranslation();
+
+    const {showNoti}= useAlertShow();
 
 
     const filterData = useMemo(() => {
         if (data) {
             console.log(data);
-            const sorted_data = data.sort((a, b) => {
-                let rem1 = parseInt(a.grandtotal) - parseInt(a.customer_payment);
-                let rem2 = parseInt(b.grandtotal) - parseInt(b.customer_payment);
-                return rem2 - rem1;
-            }
-            )
+          
 
-            return sorted_data.filter(item => {
-                if (item?.customerName?.toLowerCase()?.includes(searchtext.toLowerCase()) || item?.voucherNumber?.toLowerCase()?.includes(searchtext.toLowerCase())) {
+            return data.filter(item => {
+                if (item?.name?.toLowerCase()?.includes(searchtext.toLowerCase()) || item?.barcode?.toLowerCase()?.includes(searchtext.toLowerCase())) {
                     return item;
                 }
             })
@@ -41,13 +39,11 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
 
     const defaultdata = generateRandomData(10);
 
-    const { showNoti } = useAlertShow();
+    const {supplier_data} = useSupplierData();
 
-    const {customer_data} = useCustomerData();
-
-    const removeVoucher = useMutation(deleteVoucherfromCustomer, {
+    const removeVoucher = useMutation(deleteProductsFromSupplier, {
         onSuccess: () => {
-            customer_data.refetch();
+            supplier_data.refetch();
             showNoti("Successfully Removed Voucher")
         },
         onError: () => {
@@ -67,12 +63,11 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                         <tr>
                             <th className='border px-2 py-2'>{t('No')}</th>
 
-                            <th className='border px-2 py-2'>{t('Receipt_Number')}</th>
                             <th className='border px-2 py-2'>{t('Name')}</th>
-                            <th className='border px-2 py-2'>{t('Total_Amount')}</th>
-                            <th className='border px-2 py-2'>{t('Customer_Payment')}</th>
-                            <th className='border px-2 py-2'>{t('TRemaing')}</th>
-                            <th className='border px-2 py-2'>{t('Date')}</th>
+                            <th className='border px-2 py-2'>{t('Qty')}</th>
+
+                            <th className='border px-2 py-2'>{t('Payyan')}</th>
+                            <th className='border px-2 py-2'>{t('SRemaing')}</th>
                             <th className='border px-2 py-2'></th>
 
                         </tr>
@@ -84,20 +79,16 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                                 key={index}
                                 className={`cursor-pointer hover:bg-slate-100 select-none`}
                             >      <td className='border px-2 py-1 text-center'>{index + 1}</td>
-                                <td className='border px-2 py-1'>{item.voucherNumber}</td>
-                                <td className='border px-2 py-1'>{item.customerName}</td>
+                                <td className='border px-2 py-1'>{item.name}</td>
+                                <td className='border px-2 py-1 text-center'>{item.qty}</td>
 
-
-
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal))}</td>
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.customer_payment))}</td>
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal) - parseInt(item.customer_payment))}</td>
-                                <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
+                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.cost) * parseInt(item.qty))}</td>
+                                <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt((parseInt(item.cost) * parseInt(item.qty))- parseInt(item.supplier_payment)))}</td>
                                 <td claassName='border px-2 py-1 text-center'>
-                                    {parseInt(item.grandtotal) - parseInt(item.customer_payment) == 0 ?
+                                    {parseInt((parseInt(item.cost) * parseInt(item.qty))- parseInt(item.supplier_payment)) == 0 ?
                                         <button
                                             onClick={() => { 
-                                                removeVoucher.mutate({ customerid : customerid , sales : item.receiptNumber})
+                                                removeVoucher.mutate({ supplier_id : customerid , products : item.id})
                                              }}
                                             className='px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 text-center w-full'
 
@@ -121,4 +112,4 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
     );
 }
 
-export default CustomerVoucherTable;
+export default SupplierVoucherTable;

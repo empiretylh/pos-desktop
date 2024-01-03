@@ -9,6 +9,7 @@ import Sales from "../components/Sales/Sales";
 import Expense from "../components/Expense/Expense";
 import OtherIncome from "../components/OtherIncome/OtherIncome";
 import Customer from "../components/Customer/Customer";
+import Supplier from "../components/Supplier/Supplier";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -38,6 +39,9 @@ const Routes = () => {
     },{
       path:'/customer',
       element:<Customer/>
+    },{
+      path:'/supplier',
+      element: <Supplier/>
     }
 
 

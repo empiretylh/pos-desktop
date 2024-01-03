@@ -142,3 +142,25 @@ export const getSales = ({ queryKey }) => {
     const [_, type, time, startd, endd] = queryKey;
     return axios.get(`/api/sales/?type=${type}&time=${time}&startd=${startd}&endd=${endd}`);
 }
+
+
+export const postSupplier = (data)=>{
+    return axios.post('/api/supplier/', data);
+}
+
+export const getSupplier = (data)=>{
+    return axios.get('/api/supplier/', data);
+}
+
+export const putSupplier = (data)=>{
+    return axios.put('/api/supplier/', data);
+}
+
+export const deleteSupplier = (data)=>{
+    return axios.delete('/api/supplier/?supplier_id='+data.id);
+}
+
+export const deleteProductsFromSupplier = (data)=>{
+    console.log(data)
+    return axios.delete('/api/supplier/?supplier_id='+data.supplier_id+'&products='+data.products);
+}

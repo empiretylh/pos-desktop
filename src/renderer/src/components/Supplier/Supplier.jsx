@@ -1,22 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useMutation } from 'react-query';
-import CustomerVoucherTable from './CustomerVoucherTable';
+import SupplierVoucherTable from './SupplierVoucherTable';
 import { useOtherIncome } from '../../context/OtherIncomeDataProvider';
-import { deleteCustomer, deleteOtherIncome, postOtherIncome, putOtherIncome } from '../../server/api';
+import { deleteCustomer, deleteOtherIncome, deleteSupplier, postOtherIncome, putOtherIncome } from '../../server/api';
 import { useAlertShow } from '../custom_components/AlertProvider';
 import Loading from '../custom_components/Loading';
 import Navigation from '../custom_components/Navigation';
 import numberWithCommas from '../custom_components/NumberWithCommas';
 import { SalesByCustomerName, useCustomerData } from '../../context/CustomerProvider';
-import AddCustomer from './CustomerAddModal';
+import AddSupplier from './SupplierAddModal';
 import SetPaymentModal from './SetPaymentModal';
-import CustomerEditModal from './CustomerEditModal';
-import SelectedSalesModal from './SelectSalesModal.';
+import SupplierEditModal from './SupplierEditModal';
+import SelectProductsModal from './SelectProudctsModal';
+import { ProductsByID, useSupplierData } from '../../context/SupplierProvider';
 const { ipcRenderer } = window.electron
 
 
-const Customer = () => {
+const Supplier = () => {
 
 
     const { showConfirm, showInfo, showNoti } = useAlertShow();
@@ -26,14 +27,22 @@ const Customer = () => {
 
     const [searchtext, setSearchtext] = useState('');
     const [customer_searchtext, setCustomer_SearchText] = useState('');
-    const [selectedSales, setSelectedSales] = useState(null);
+    const [selectedSupplier, setSelectedSupplier] = useState(null);
     const [sortby, setSortBy] = useState('none');
 
     const [time, setTime] = useState('month')
 
     const { t } = useTranslation();
 
-    const { customer_data, data } = useCustomerData();
+    const supplierData = useSupplierData();
+
+    if (!supplierData) {
+        return <div>Loading...</div>; // or some other placeholder
+    }
+
+    const { supplier_data , data} = supplierData;
+
+
 
     const [selectedRow, setSelectedRow] = useState(null);
 
@@ -69,10 +78,10 @@ const Customer = () => {
     const [showPayment, setShowPayment] = useState(false);
     const [selectedPayment, setSelectedPayment] = useState([]);
 
-    const DeleteCustomer = useMutation(deleteCustomer, {
+    const DeleteSupplier = useMutation(deleteSupplier, {
         onSuccess: () => {
-            customer_data.refetch();
-            setSelectedSales(null);
+            supplier_data.refetch();
+            setSelectedSupplier(null);
             showNoti("Successfully Deleted Customer")
         },
         onError: () => {
@@ -81,27 +90,12 @@ const Customer = () => {
     });
 
 
-    useEffect(() => {
-        const handleKeyDown = (e) => {
-            if (e.ctrlKey && e.key === 'Delete') {
-                DeleteOtherIncomeButton();
-            }
 
-            // alt del to clear form
-            if (e.altKey && e.key === 'Delete') {
-                clearOtherIncomeForm();
-            }
-        }
-        window.addEventListener('keydown', handleKeyDown);
-        return () => {
-            window.removeEventListener('keydown', handleKeyDown);
-        }
-    }, [selectedRow])
 
     //Compute sales vouchers grandtotal
-    const computeVouchersRemainingTotal = (sales=[]) => {
+    const computeVouchersRemainingTotal = (sales) => {
         let total = 0;
-        sales?.map(item => {
+        sales.map(item => {
             total += parseInt(item.grandtotal) - parseInt(item.customer_payment);
         })
         return total;
@@ -110,20 +104,20 @@ const Customer = () => {
 
     const AllVoucherRemaingTotal = useMemo(() => {
         let total = 0;
-        if (customer_data) {
-            customer_data?.data?.data.map(item => {
-                item?.sales?.map(salesItem => {
-                    total += parseInt(salesItem.grandtotal) - parseInt(salesItem.customer_payment);
+        if (supplier_data) {
+            supplier_data?.data?.data.map(item => {
+                item?.products?.map(pd => {
+                    total += parseInt(pd.cost) * parseInt(pd.qty);
                 })
             })
         }
         return total;
-    }, [customer_data])
+    }, [supplier_data])
 
 
-    const filterCustomerData = useMemo(() => {
-        if (customer_data) {
-            return customer_data.data.data.filter(item => {
+    const filterSupplierData = useMemo(() => {
+        if (supplier_data) {
+            return supplier_data.data.data.filter(item => {
                 if (item.name.toLowerCase().includes(customer_searchtext.toLowerCase())) {
                     return item;
                 }
@@ -131,9 +125,9 @@ const Customer = () => {
         }
     }, [customer_searchtext, data])
 
-    const [showCustomer, setShowCustomer] = useState(false);
+    const [showSupplier, setShowSupplier] = useState(false);
 
-    const salesData = SalesByCustomerName(selectedSales?.id);
+    const salesData = ProductsByID(selectedSupplier?.id);
     const [showEditCustomer, setShowEditCustomer] = useState(false);
 
     const [showSelectedSales, setShowSelectedSales] = useState(false);
@@ -144,8 +138,8 @@ const Customer = () => {
             <Loading show={loading} />
             <div className="bg-white font-sans h-full w-full p-3 overflow-auto">
                 <div className="flex flex-row items-center bg-white ">
-                    <i className='bi bi-person text-2xl mr-2'></i>
-                    <h1 className='text-2xl font-bold'>{t('Customer')}</h1>
+                    <i className='bi bi-box text-2xl mr-2'></i>
+                    <h1 className='text-2xl font-bold'>{t('Supplier')}</h1>
 
                     <h1 className='text-lg font-bold text-right ml-auto' style={{ width: 180 }}>{numberWithCommas(AllVoucherRemaingTotal)} MMK</h1>
 
@@ -161,18 +155,18 @@ const Customer = () => {
                                 <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
                                 <input type="text"
                                     className="border border-gray-300 rounded-md w-full p-2 mr-3"
-                                    placeholder={t('Search Customer')} onChange={(e) => setCustomer_SearchText(e.target.value)} />
+                                    placeholder={t('Search Supplier')} onChange={(e) => setCustomer_SearchText(e.target.value)} />
 
                             </div>
 
                             <button
                                 className='bg-primary hover:bg-blue-600 text-white rounded-md p-2 whitespace-nowrap'
                                 onClick={() => {
-                                    setShowCustomer(true);
+                                    setShowSupplier(true);
                                 }}
                             >
                                 <label className="whitespace-nowrap">
-                                    + Add Customer
+                                    + Add Supplier
                                 </label>
                             </button>
                         </div>
@@ -180,20 +174,20 @@ const Customer = () => {
                             height: 'calc(100vh - 200px)'
 
                         }}>
-                            {filterCustomerData.map((item, index) =>
+                            {filterSupplierData.map((item, index) =>
                             (
                                 <div
-                                    onClick={() => setSelectedSales(item)}
-                                    className={`flex flex-row items-center border-b py-2 px-2 hover:bg-slate-300 cursor-pointer select-none ${selectedSales?.id == item.id ? 'bg-blue-200' : ''}`} key={index}>
+                                    onClick={() => setSelectedSupplier(item)}
+                                    className={`flex flex-row items-center border-b py-2 px-2 hover:bg-slate-300 cursor-pointer select-none ${selectedSupplier?.id == item.id ? 'bg-blue-200' : ''}`} key={index}>
                                     <div className="flex flex-col">
                                         <div className='flex flex-row items-center'>
-                                            <h1 className='text-md font-bold'>{item?.name}</h1>
+                                            <h1 className='text-md font-bold'>{item.name}</h1>
                                         </div>
-                                        <p className='text-md '>{item?.description}</p>
+                                        <p className='text-md '>{item.description}</p>
                                     </div>
                                     <div className='flex flex-col items-center ml-auto'>
-                                        <h1 className='text-md font-bold'>{numberWithCommas(computeVouchersRemainingTotal(item?.sales))} Ks</h1>
-                                        <h1 className='text-md'>{item?.sales?.length} Voucher</h1>
+                                        {/* <h1 className='text-md font-bold'>{numberWithCommas(computeVouchersRemainingTotal(item.sales))} Ks</h1>
+                                        <h1 className='text-md'>{item.sales.length} Voucher</h1> */}
                                     </div>
                                 </div>
                             )
@@ -205,8 +199,8 @@ const Customer = () => {
                             <div className='flex flex-row items-center w-full justify-between'>
                                 <div className="flex flex-col items-center">
 
-                                    {selectedSales && <div><h1 className="text-md font-bold whitespace-nowrap mr-2">{selectedSales?.name}'s Voucher List</h1>
-                                        <p>{selectedSales.description}</p></div>
+                                    {selectedSupplier && <div><h1 className="text-md font-bold whitespace-nowrap mr-2">{selectedSupplier?.name}'s Products List</h1>
+                                        <p>{selectedSupplier.description}</p></div>
                                     }
 
                                 </div>
@@ -226,15 +220,15 @@ const Customer = () => {
                                     </button>
                                     <button className='bg-red-500 hover:bg-red-600 text-white rounded-md p-2 whitespace-nowrap'
                                         onClick={() => {
-                                            showConfirm("Delete Customer", "Are you sure to delete this customer?", () => {
-                                                DeleteCustomer.mutate({ id: selectedSales?.id });
+                                            showConfirm("Delete Supplier", "Are you sure to delete this supplier?", () => {
+                                                DeleteSupplier.mutate({ id: selectedSupplier?.id });
                                             }
                                             )
                                         }}
                                     >
                                         <i className="bi bi-trash mr-1"></i>
                                         <label className="whitespace-nowrap">
-                                            Delete Customer
+                                            Delete Supplier
                                         </label>
                                     </button>
                                 </div>
@@ -242,7 +236,7 @@ const Customer = () => {
                             </div>
                             <div className="flex flex-row items-center mt-3 w-full">
                                 <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
-                                <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Receipt Number')} onChange={(e) => setSearchtext(e.target.value)} />
+                                <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Products')} onChange={(e) => setSearchtext(e.target.value)} />
                                 <button className='bg-primary hover:bg-blue-600 text-white rounded-md p-2 whitespace-nowrap mr-2'
                                     onClick={() => {
                                         setShowSelectedSales(true);
@@ -251,13 +245,13 @@ const Customer = () => {
                                 >
                                     <i className='bi bi-receipt mr-1'></i>
                                     <label className="whitespace-nowrap">
-                                        Add Recent Vouchers
+                                        Add Products
                                     </label>
                                 </button>
                             </div>
                         </div>
-                        {selectedSales ?
-                            <CustomerVoucherTable
+                        {selectedSupplier ?
+                            <SupplierVoucherTable
                                 data={salesData}
                                 searchtext={searchtext}
                                 sortby={sortby}
@@ -265,7 +259,7 @@ const Customer = () => {
                                 setSelectedRow={setSelectedRow}
                                 rowDoubleClick={productRowClick_Update}
                                 setShowPayment={setShowPayment}
-                                customerid={selectedSales?.id}
+                                customerid={selectedSupplier?.id}
                             />
                             :
                             <div>
@@ -278,13 +272,13 @@ const Customer = () => {
                 </div>
 
             </div>
-            <AddCustomer show={showCustomer} setShow={setShowCustomer} />
+            <AddSupplier show={showSupplier} setShow={setShowSupplier} />
             <SetPaymentModal show={showPayment} setShow={setShowPayment} payment_data={selectedRow} />
-            <CustomerEditModal show={showEditCustomer} setShow={setShowEditCustomer} oldcustomer={selectedSales}  />
-            <SelectedSalesModal show={showSelectedSales} setShow={setShowSelectedSales} oldSalesData={salesData} customerid={selectedSales?.id} />  
+            <SupplierEditModal show={showEditCustomer} setShow={setShowEditCustomer} oldcustomer={selectedSupplier} />
+            <SelectProductsModal show={showSelectedSales} setShow={setShowSelectedSales} oldSalesData={salesData} customerid={selectedSupplier?.id} />
 
         </div>
     )
 }
 
-export default Customer;
+export default Supplier;
