@@ -10,6 +10,7 @@ import Expense from "../components/Expense/Expense";
 import OtherIncome from "../components/OtherIncome/OtherIncome";
 import Customer from "../components/Customer/Customer";
 import Supplier from "../components/Supplier/Supplier";
+import Report from "../components/report/Report";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -30,18 +31,21 @@ const Routes = () => {
       element: <Sales />
     },
     {
-      path:'/expense',
-      element:<Expense/>
+      path: '/expense',
+      element: <Expense />
     },
     {
-      path:'/otherincome',
-      element:<OtherIncome/>
-    },{
-      path:'/customer',
-      element:<Customer/>
-    },{
-      path:'/supplier',
-      element: <Supplier/>
+      path: '/otherincome',
+      element: <OtherIncome />
+    }, {
+      path: '/customer',
+      element: <Customer />
+    }, {
+      path: '/supplier',
+      element: <Supplier />
+    }, {
+      path: '/report',
+      element: <Report />
     }
 
 
