@@ -161,6 +161,10 @@ export const deleteSupplier = (data)=>{
 }
 
 export const deleteProductsFromSupplier = (data)=>{
-    console.log(data)
     return axios.delete('/api/supplier/?supplier_id='+data.supplier_id+'&products='+data.products);
+}
+
+export const getProfit = (data) =>{
+    return axios.get('/api/profitnloss/', data);
+
 }

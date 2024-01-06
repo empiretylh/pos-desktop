@@ -13,15 +13,14 @@ const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSe
 
     const filterData = useMemo(() => {
         if (data) {
-            console.log(data);
-            const sorted_data = data.sort((a, b) => {
+            const sorted_data = data?.sort((a, b) => {
                 let rem1 = parseInt(a.grandtotal) - parseInt(a.customer_payment);
                 let rem2 = parseInt(b.grandtotal) - parseInt(b.customer_payment);
                 return rem2 - rem1;
             }
             )
 
-            return sorted_data.filter(item => {
+            return sorted_data?.filter(item => {
                 if (item?.customerName?.toLowerCase()?.includes(searchtext.toLowerCase()) || item?.voucherNumber?.toLowerCase()?.includes(searchtext.toLowerCase())) {
                     return item;
                 }
@@ -32,12 +31,9 @@ const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSe
 
 
 
-    return (
-        <div className={`w-full overflow-auto my-2`} style={{
-            height: "calc(100vh - 200px)"
-        }}>
-            <div className='w-full h-full'>
-                <table className='w-full'>
+    return (<div className={`w-full overflow-auto my-2 absolute h-full`}>
+    <div className='w-full h-full'>
+        <table className='w-full h-full'>
                     <thead className='bg-primary sticky top-0 text-white'>
                         <tr>
 
