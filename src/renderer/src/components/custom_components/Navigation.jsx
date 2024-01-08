@@ -46,6 +46,11 @@ const nav = [
         link: "/supplier",
     },
     {
+        name: "Sales Report",
+        icon: "bi bi-file-ruled",
+        link: "/salesreport",
+    },
+    {
         name: "Report",
         icon: "bi bi-file-bar-graph",
         link: "/report",
@@ -63,22 +68,22 @@ const Navigation = () => {
         <div
             className={`h-screen bg-white font-mono text-black ${"w-20"} duration-300 relative border-r-2`}
         >
-            <div className="flex flex-row items-center py-3 px-2 ">
-                <img
+            <div className="flex flex-row items-center px-2 ">
+                {/* <img
                     src={IMAGE.app_icon}
                     className="w-14 h-14 filter brightness-0"
-                    alt="synapse-work"
-                />
-                <h1
+                    alt={APPNAME}
+                /> */}
+                {/* <h1
                     className={`${!open && "scale-0"
                         } duration-200 origin-left ml-2 text-xl font-semibold`}
                 >
                     {APPNAME}
-                </h1>
+                </h1> */}
             </div>
-            <div className="border-b-2 border-gray-800 w-full"></div>
+            {/* <div className="border-b-2 border-gray-800 w-full"></div> */}
             {/* Navgiation */}
-            <ul className="mt-6 px-2">
+            <ul className="px-2">
                 {nav.map((item, index) => (
                     <Link
                         key={index}

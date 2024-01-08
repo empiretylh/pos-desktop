@@ -143,6 +143,10 @@ export const getSales = ({ queryKey }) => {
     return axios.get(`/api/sales/?type=${type}&time=${time}&startd=${startd}&endd=${endd}`);
 }
 
+export const putSales = (data) => {
+    return axios.put('/api/sales/', data);
+}
+
 
 export const postSupplier = (data)=>{
     return axios.post('/api/supplier/', data);
@@ -167,4 +171,8 @@ export const deleteProductsFromSupplier = (data)=>{
 export const getProfit = (data) =>{
     return axios.get('/api/profitnloss/', data);
 
+}
+
+export const deleteSales = (data) =>{
+    return axios.delete('/api/sales/?id='+data.id);
 }

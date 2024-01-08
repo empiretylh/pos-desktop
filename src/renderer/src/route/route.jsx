@@ -11,6 +11,7 @@ import OtherIncome from "../components/OtherIncome/OtherIncome";
 import Customer from "../components/Customer/Customer";
 import Supplier from "../components/Supplier/Supplier";
 import Report from "../components/report/Report";
+import SalesReport from "../components/SalesReport/SalesReport";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -46,6 +47,10 @@ const Routes = () => {
     }, {
       path: '/report',
       element: <Report />
+    },
+    {
+      path: '/salesreport',
+      element: <SalesReport />
     }
 
 

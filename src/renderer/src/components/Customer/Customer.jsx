@@ -123,7 +123,7 @@ const Customer = () => {
 
     const filterCustomerData = useMemo(() => {
         if (customer_data) {
-            return customer_data.data.data.filter(item => {
+            return customer_data?.data?.data?.filter(item => {
                 if (item.name.toLowerCase().includes(customer_searchtext.toLowerCase())) {
                     return item;
                 }
@@ -180,7 +180,7 @@ const Customer = () => {
                             height: 'calc(100vh - 200px)'
 
                         }}>
-                            {filterCustomerData.map((item, index) =>
+                            {filterCustomerData?.map((item, index) =>
                             (
                                 <div
                                     onClick={() => setSelectedSales(item)}

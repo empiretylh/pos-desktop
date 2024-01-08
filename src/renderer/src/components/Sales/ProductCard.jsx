@@ -137,7 +137,7 @@ const ProductCard = ({ data, searchtext = '', sortby = 'name', selectedProduct, 
                                     alt=""  style={{
                                         width:'100%',
                                         height:150,
-                                        objectFit:'cover'
+                                        objectFit:'contain'
                                     }}
                                     onError={(e) => { e.target.onerror = null; e.target.src = "https://www.pngitem.com/pimgs/m/27-272007_transparent-product-icon-png-product-vector-icon-png.png" }}
 />

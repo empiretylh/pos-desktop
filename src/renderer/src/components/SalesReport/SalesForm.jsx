@@ -1,17 +1,17 @@
 import React, { useState, useContext, useRef, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import CustomerChoice from './CustomerChoiceModal';
-import { useCart } from './CartContextProvier';
 import numberWithCommas from '../custom_components/NumberWithCommas';
-import { postSales } from '../../server/api';
+import { deleteSales, postSales, putSales } from '../../server/api';
 import { useMutation } from 'react-query';
 import { useCustomerData } from '../../context/CustomerProvider';
 import { useAlertShow } from '../custom_components/AlertProvider';
 import { useProductsData } from '../../context/ProductsDataProvider';
 import Loading from '../custom_components/Loading';
+import { useCartTemp } from './CartContextTempProvier';
+import ProductTableModal from './ProductTableModal';
 
 
-const SalesForm = () => {
+const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRow }) => {
     const { t } = useTranslation();
 
     const salesForm = useRef(null);
@@ -20,13 +20,15 @@ const SalesForm = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const [customername, setCustomername] = useState('');
+    const [customername, setCustomername] = useState(defaultname || 'Unknown');
     const [customershow, setCustomerShow] = useState(false);
 
-    const { cart, plusQty, minusQty, editQty, priceEdit, total, setCart } = useCart();
+    const [showpdtable, setShowpdtable] = useState(false);
+
+    const { cart, plusQty, minusQty, editQty, priceEdit, total, setCart } = useCartTemp();
     const { data: customerdata, customer_data } = useCustomerData();
     const { product_data } = useProductsData();
-    const { showInfo, showNoti } = useAlertShow();
+    const { showInfo, showNoti, showConfirm } = useAlertShow();
 
 
     const [isEditing, setIsEditing] = useState(false);
@@ -38,18 +40,12 @@ const SalesForm = () => {
     const [showDescription, setShowDescription] = useState(false);
     const [isSaveCustomer, setIsSaveCustomer] = useState(false);
 
-    useEffect(() => {
-        if (customername) {
-            const isCustomer = customerdata?.find(item => item.name == customername)
-            console.log(isCustomer)
-            if (isCustomer?.name) {
-                setIsSaveCustomer(true)
-            } else {
-                setIsSaveCustomer(false)
-            }
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
-        }
-    }, [customerdata, customername])
+    useEffect(() => {
+        setCustomername(defaultname)
+        console.log(defaultname);
+    }, [defaultname, cart])
 
 
 
@@ -87,7 +83,7 @@ const SalesForm = () => {
     }, [tax, discount, delivery, total]);
 
 
-    const CreateReceipt = useMutation(postSales, {
+    const UpdateReceipt = useMutation(putSales, {
         onMutate: () => {
             console.log('onMutate')
             setLoading(true);
@@ -105,8 +101,12 @@ const SalesForm = () => {
             setPayment_amount(0)
             setIsSaveCustomer(false);
             customer_data.refetch();
-            showNoti(t('RSC'), 'bi bi-check-circle text-green-500')
             product_data.refetch();
+            sales_data.refetch();
+            setSelectedRow(null);
+            setCustomername('')
+
+            showNoti(t('RSC'), 'bi bi-check-circle text-green-500')
 
 
 
@@ -120,14 +120,51 @@ const SalesForm = () => {
 
     })
 
+    const deleteReceipt = useMutation(deleteSales, {
+        onMutate: () => {
+            console.log('onMutate')
+            setLoading(true);
+
+        },
+        onSuccess: (data) => {
+            console.log('onSuccess')
+            console.log(data)
+            setLoading(false);
+            setCart([])
+            setCustomername('')
+            setTax(0)
+            setDescription('')
+            setDiscount(0)
+            setDelivery(0)
+            setPayment_amount(0)
+            setIsSaveCustomer(false);
+            customer_data.refetch();
+            product_data.refetch();
+            sales_data.refetch();
+            setSelectedRow(null);
+            setCustomername('')
+
+            showNoti(t('Successfully Deleted Voucher'), 'bi bi-check-circle text-green-500')
+        },
+        onError: (error) => {
+            console.log('onError')
+            console.log(error)
+            setLoading(false);
+            showNoti('Error', 'bi bi-x-circle text-red-500')
+        }
+    })
     const onSubmit = (e) => {
         e.preventDefault();
         if (cart.length < 1)
             return showInfo("", "Please Select Items")
 
 
-        let products = cart.map(item => {
+
+
+
+        let products = cart.filter(i => !i.isNew).map(item => {
             return {
+                id: item.id,
                 name: item.id,
                 qty: item.qty,
                 price: item.price,
@@ -135,51 +172,27 @@ const SalesForm = () => {
             }
         });
 
+        let newproducts = cart.filter(i => i.isNew).map(item => {
+            return {
+                name: item.id,
+                qty: item.qty,
+                price: item.price,
+                pdname: item.name,
+            }
+
+        })
+
+
 
         let data = {
+            id: salesid,
             customerName: customername,
-            products: JSON.stringify(products),
-            totalAmount: total,
-            grandtotal: computeGrandTotal,
+            products: products,
+            newproducts: newproducts,
 
         }
 
-        if (customername == '') {
-            data.customerName = "Unknown"
-        }
-
-        if (tax && tax !== '0') {
-            data.tax = tax;
-        } else {
-            data.tax = 0;
-        }
-
-        if (discount && discount !== '0') {
-            data.discount = discount
-        } else {
-            data.discount = 0
-        }
-
-        if (delivery && delivery !== '0') {
-            data.deliveryCharges = delivery
-        } else {
-            data.deliveryCharges = 0
-        }
-
-        if (isSaveCustomer) {
-            data.isSaveCustomer = true
-            data.payment_amount = payment_amount
-        }
-
-        if (description && description !== '') {
-            data.description = description;
-        } else {
-            data.description = ''
-        }
-
-        console.log(data)
-
-        CreateReceipt.mutate(data)
+        UpdateReceipt.mutate(data)
 
         setCart([])
         setCustomername('')
@@ -210,6 +223,11 @@ const SalesForm = () => {
     }
         , [inputRef])
 
+    const scrollref = useRef(null);
+    // if cart data is length is change scroll to top
+    useEffect(() => {
+        scrollref.current.scrollTop = 0;
+    }, [cart])
 
 
     return (
@@ -226,16 +244,16 @@ const SalesForm = () => {
                         className="border border-gray-300 rounded-md w-full p-2  my-1"
                         placeholder={t('Customer_Name')} id="name" />
 
-                    <button
+                    {/* <button
                         type="button"
                         onClick={() => setCustomerShow(true)}
                         className='bg-primary text-white rounded-md p-2 ml-2'>
 
                         <i className="bi bi-person text-xl"></i>
-                    </button>
+                    </button> */}
                 </div>
                 {/* {CheckBox} */}
-                <div className="flex flex-row items-center">
+                {/* <div className="flex flex-row items-center">
                     <input
                         type="checkbox"
                         checked={isSaveCustomer}
@@ -244,13 +262,21 @@ const SalesForm = () => {
                         id="savecustomer" />
                     <label htmlFor='savecustomer' className="text-sm text-black font-bold ml-2">{t('savecustomer')}</label>
 
-                </div>
+                </div> */}
                 <div className={`flex flex-col mt-3`}>
-                    <div className='w-full flex flex-row'>
+                    <div className='w-full flex flex-row items-center'>
                         <h1 className="text-md font-bold">Cart Lists</h1>
                         <label className="text-sm text-black font-bold ml-auto"> {cart?.length}{' '}{t('item')}</label>
+                        {/* Add Product btn */}
+                        <button
+                            type="button"
+                            onClick={() => setShowpdtable(true)}
+                            className='bg-primary text-white rounded-md p-2 ml-2'>
+                            <i className="bi bi-plus text-xl"></i>
+                            Add Products
+                        </button>
                     </div>
-                    <div className="overflow-y-auto max-h-[280px] mt-2 flex flex-col-reverse" tabIndex={-1}>
+                    <div className="overflow-y-auto max-h-[280px] mt-2 flex flex-col-reverse" tabIndex={-1} ref={scrollref}>
                         {cart?.map((item) => {
                             return (
                                 <div key={item.id} className="flex flex-row justify-between mt-2 bg-slate-200 p-2 rounded">
@@ -327,73 +353,15 @@ const SalesForm = () => {
                             <h1 className="text-xl font-bold">{numberWithCommas(total)} Ks</h1>
 
                         </div>
-                        <div className='flex flex-col'>
-                            {/* Tax %, Discount %, Delivery Charges */}
-                            <div className="flex flex-row w-full">
-                                <div className="flex flex-col w-1/2">
-                                    <label className="text-sm text-black font-bold mt-3">Tax %</label>
-                                    <input
-                                        type="number"
-                                        className="border border-gray-300 rounded-md  p-2  my-1 text-center"
-                                        placeholder="0"
-                                        value={tax + ''}
-                                        onFocus={e => e.target.select()}
-                                        onChange={e => setTax(e.target.value)}
-                                    />
-                                </div>
-                                <div className="flex flex-col w-1/2">
-                                    <label className="text-sm utext-black font-bold mt-3 ml-2">Discount %</label>
-                                    <input
-                                        type="number"
-                                        className="border border-gray-300 rounded-md p-2  my-1 text-center ml-2"
-                                        placeholder="0"
-                                        value={discount + ''}
-                                        onFocus={e => e.target.select()}
-                                        onChange={e => setDiscount(e.target.value)}
-                                    />
-                                </div>
-                            </div>
 
-
-                        </div>
-                        <label className="text-sm text-black font-bold mt-3">Delivery Charges</label>
-                        <input
-                            type="number"
-                            className="border border-gray-300 rounded-md w-full p-2  my-1 "
-                            placeholder="0"
-                            value={delivery + ''}
-                            onFocus={e => e.target.select()}
-                            onChange={e => setDelivery(e.target.value)}
-                        />
-
+                        {/* 
                         <div
                             className="flex flex-row justify-between bg-yellow-300 text-black p-1 mt-2">
                             <h1 className="text-xl font-bold">Grand Total</h1>
                             <h1 className="text-xl font-bold">{numberWithCommas(computeGrandTotal)} Ks</h1>
-                        </div>
+                        </div> */}
 
-                        {isSaveCustomer ?
-                            <div className="flex flex-col">
-                                <label className="text-sm text-black font-bold mt-3">Payment Amount</label>
-                                <input
-                                    type="number"
-                                    className="border border-gray-300 rounded-md w-full p-2  my-1 "
-                                    placeholder="0"
-                                    value={payment_amount + ''}
-                                    onFocus={e => e.target.select()}
-                                    onChange={e => setPayment_amount(e.target.value)}
-                                />
-                            </div>
-                            : null}
 
-                        <details className="mt-1" open={showDescription} >
-                            <summary className="font-bold mb-2 cursor-pointer select-none" onClick={e => setDescription(prev => !prev)}>Description</summary>
-                            <textarea
-                                className="border border-gray-300 rounded-md w-full p-2  my-1 "
-                                placeholder="Description"
-                                onChange={e => setDescription(e.target.value)}
-                            />
-                        </details>
 
                         {/* Create Receipt Button */}
                         <button
@@ -401,14 +369,28 @@ const SalesForm = () => {
                             onClick={onSubmit}
                             className="bg-primary text-white rounded-md p-2 mt-2 w-full">
                             <i className="bi bi-receipt text-md select-none cursor-pointer"></i>{' '}
-                            <label className="text-md font-mono select-none cursor-pointer">Create Receipt</label>
+                            <label className="text-md font-mono select-none cursor-pointer">Update Receipt</label>
+                        </button>
+
+                        <button
+                            type="button"
+                            onClick={() => {
+                                showConfirm('Delete Receipt','Are you sure to delete this receipt?', () => {
+                                    deleteReceipt.mutate({
+                                        id: salesid
+                                    })
+                                })
+                            }}
+                            className="bg-red-500 text-white rounded-md p-2 mt-2 w-full">
+                            <i className="bi bi-trash text-md select-none cursor-pointer"></i>{' '}
+                            <label className="text-md font-mono select-none cursor-pointer">Delete Receipt</label>
                         </button>
 
                     </div>
                 </div>
 
             </form >
-            <CustomerChoice show={customershow} setShow={setCustomerShow} customer={customername} setCustomer={setCustomername} />
+            <ProductTableModal show={showpdtable} setShow={setShowpdtable} setSelectProduct={setSelectedProduct} selectedProduct={selectedProduct} />
         </div >
     )
 }
