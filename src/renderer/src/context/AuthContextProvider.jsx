@@ -64,6 +64,10 @@ const AuthProvider = ({ children }) => {
     }
   }, [user_data.data]);
 
+  const profiledata = useMemo(()=>{
+    return user_data.data?.data
+  },[user_data.data])
+
 
   // Memoized value of the authentication context
   const contextValue = useMemo(
@@ -71,8 +75,10 @@ const AuthProvider = ({ children }) => {
       token,
       setToken,
       LOGOUT,
+      user_data,
+      profiledata
     }),
-    [token]
+    [token, profiledata, user_data]
   );
 
   if (user_data.isFetching) {
@@ -96,5 +102,6 @@ const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   return useContext(AuthContext);
 };
+
 
 export default AuthProvider;

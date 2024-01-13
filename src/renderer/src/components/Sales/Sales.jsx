@@ -90,7 +90,12 @@ const Sales = () => {
                                 ref={searchref}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
-                                        addToCart(selectedProduct);
+                                        if (selectedProduct) {
+                                      
+                                            addToCart(selectedProduct);
+                                            setSearchtext('')
+                                            searchref.current.value=''
+                                        }
                                     }
 
                                 }}

@@ -176,3 +176,8 @@ export const getProfit = (data) =>{
 export const deleteSales = (data) =>{
     return axios.delete('/api/sales/?id='+data.id);
 }
+
+export const getTopProduct = ({queryKey}) =>{
+    const [_, time] = queryKey;
+    return axios.get('/api/toproduct/?time='+time);
+}

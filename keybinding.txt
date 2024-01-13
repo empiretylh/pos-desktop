@@ -8,3 +8,5 @@ Select Product Item on Table = Tab
 Delete Products & Category  = Ctrl + Del
 
 Clear form = Alt + Del
+
+Reload Data from Server : F5

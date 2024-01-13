@@ -12,6 +12,7 @@ import Customer from "../components/Customer/Customer";
 import Supplier from "../components/Supplier/Supplier";
 import Report from "../components/report/Report";
 import SalesReport from "../components/SalesReport/SalesReport";
+import Setting from "../components/setting/setting";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -51,6 +52,9 @@ const Routes = () => {
     {
       path: '/salesreport',
       element: <SalesReport />
+    }, {
+      path: '/settings',
+      element: <Setting />
     }
 
 

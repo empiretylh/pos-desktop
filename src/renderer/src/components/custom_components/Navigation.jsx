@@ -98,7 +98,7 @@ const Navigation = () => {
             </ul>
             <ul className="mt-auto px-2">
                 <Link
-                    className={`flex flex-col items-center py-2 px-2 my-2 rounded-lg  hover:bg-indigo-100 cursor-pointer`}
+                    className={`flex flex-col items-center py-2 px-2 my-2 rounded-lg  hover:bg-indigo-100 cursor-pointer ${'/settings' === nav_select ? "bg-indigo-100" : ''}`}
                     to={"/settings"}
                 >
                     <i className="bi bi-gear text-2xl"></i>
