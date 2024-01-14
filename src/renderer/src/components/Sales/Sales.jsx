@@ -10,14 +10,16 @@ import SalesForm from './SalesForm';
 import CategorySelect from './CategorySelect';
 import { CartContextProvider, useCart } from './CartContextProvier';
 import ProductCard from './ProductCard';
+import { useSetting } from '../../context/SettingContextProvider';
 
 const Sales = () => {
 
     const [showtype, setShowtype] = useState('today');
 
     const { showConfirm, showInfo, showNoti } = useAlertShow();
+    const {settings} = useSetting();
 
-    const [isImageView, setIsImageView] = useState(false);
+    const [isImageView, setIsImageView] = useState(settings?.showimage);
 
     const [loading, setLoading] = useState(false);
 

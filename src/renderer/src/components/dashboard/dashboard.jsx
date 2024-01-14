@@ -21,6 +21,7 @@ import { useSupplierData } from '../../context/SupplierProvider';
 import LessThanQtyModal from './LessThanQtyModal';
 import ExpireInModal from './ExpireInQtyModal';
 import { Link } from 'react-router-dom';
+import { useSetting } from '../../context/SettingContextProvider';
 
 const Dashboard = () => {
 
@@ -45,6 +46,7 @@ const Dashboard = () => {
 
     const { customer_data, data: customerdata } = useCustomerData();
     const { supplier_data, data: supplierdata } = useSupplierData();
+    const {settings} = useSetting();
 
     const [lessthanshow, setLessThanShow] = useState(false);
     const [expireshow, setExpireShow] = useState(false);
@@ -418,7 +420,7 @@ const Dashboard = () => {
                         <div className="flex flex-r ow items-center">
                             <i className='bi bi-box2-fill text-white text-5xl mr-2'></i>
                             <div>
-                                <h1 className='text-xl md:text-xl  font-bold text-white'>Less than 10 qty</h1>
+                                <h1 className='text-xl md:text-xl  font-bold text-white'>Less than {settings?.lessthan} qty</h1>
                                 <h1 className='text-xl mt-2 font-bold text-white'>{LessThanProducts?.length} Products</h1>
                             </div>
                         </div>
@@ -427,7 +429,7 @@ const Dashboard = () => {
                         <div className="flex flex-row items-center">
                             <i className='bi bi-box2-fill text-white text-5xl mr-2'></i>
                             <div>
-                                <h1 className='text-xl md:text-xl  font-bold text-white'>Expire in week</h1>
+                                <h1 className='text-xl md:text-xl  font-bold text-white'>Expire in {settings.expireshow} days</h1>
                                 <h1 className='text-xl mt-2 font-bold text-white'>{ExpireProducts?.length} Products</h1>
                             </div>
                         </div>

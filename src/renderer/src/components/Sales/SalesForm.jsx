@@ -9,6 +9,7 @@ import { useCustomerData } from '../../context/CustomerProvider';
 import { useAlertShow } from '../custom_components/AlertProvider';
 import { useProductsData } from '../../context/ProductsDataProvider';
 import Loading from '../custom_components/Loading';
+import { useSetting } from '../../context/SettingContextProvider';
 
 
 const SalesForm = () => {
@@ -17,6 +18,7 @@ const SalesForm = () => {
     const salesForm = useRef(null);
     const inputRef = useRef(null);
 
+    const { settings } = useSetting();
 
     const [loading, setLoading] = useState(false);
 
@@ -76,7 +78,11 @@ const SalesForm = () => {
 
         let grandTotal = total;
         grandTotal += (total * tax) / 100;
-        grandTotal -= (total * discount) / 100;
+        if (settings?.discount == 'percent') {
+            grandTotal -= (total * discount) / 100;
+        } else {
+            grandTotal -= discount;
+        }
         grandTotal += parseInt(delivery);
 
         // decimal fixed to 2
@@ -84,7 +90,7 @@ const SalesForm = () => {
 
         return grandTotal
 
-    }, [tax, discount, delivery, total]);
+    }, [tax, discount, delivery, total, settings?.discount]);
 
 
     const CreateReceipt = useMutation(postSales, {
@@ -176,6 +182,10 @@ const SalesForm = () => {
         } else {
             data.description = ''
         }
+
+        if (settings?.discount == 'amount') {
+            data.isDiscountAmount = true
+          }
 
         console.log(data)
 
@@ -342,7 +352,7 @@ const SalesForm = () => {
                                     />
                                 </div>
                                 <div className="flex flex-col w-1/2">
-                                    <label className="text-sm utext-black font-bold mt-3 ml-2">Discount %</label>
+                                    <label className="text-sm utext-black font-bold mt-3 ml-2">{settings?.discount == 'percent' ? 'Discount %' : 'Discount (amount)'}</label>
                                     <input
                                         type="number"
                                         className="border border-gray-300 rounded-md p-2  my-1 text-center ml-2"

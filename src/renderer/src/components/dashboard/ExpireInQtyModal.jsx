@@ -8,6 +8,7 @@ import { useCustomerData } from '../../context/CustomerProvider';
 import numberWithCommas from '../custom_components/NumberWithCommas';
 import { useSupplierData } from '../../context/SupplierProvider';
 import { useTranslation } from 'react-i18next';
+import { useSetting } from '../../context/SettingContextProvider';
 
 const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
 
@@ -16,8 +17,9 @@ const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
 
     const [searchtext, setSearchtext] = useState('');
     const { product_data, data } = useProductsData();
+    const {settings} = useSetting();
 
-    const pdata = getBeforeExpireProduct(7);
+    const pdata = getBeforeExpireProduct(settings.expireshow);
     const { t } = useTranslation();
 
     const [showEditQty, setShowEditQty] = useState(false);
@@ -60,7 +62,7 @@ const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
         return []
 
 
-    }, [pdata.data, data, oldSalesData, searchtext]);
+    }, [pdata?.data, data, oldSalesData, searchtext]);
 
     const inputRef = useRef(null);
     const qtyref = useRef(null);
@@ -103,7 +105,7 @@ const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
                 <div className="flex justify-between items-center p-2">
                     <div className='flex flex-row items-center'>
                         <i className='bi bi-package text-2xl mr-2'></i>
-                        <h1 className="text-xl font-bold">Expire in week</h1>
+                        <h1 className="text-xl font-bold">Expire in {settings.expireshow} days</h1>
                     </div>
                     <button className="text-red-500 p-3" onClick={() => setShow(false)}>X</button>
                 </div>

@@ -181,3 +181,15 @@ export const getTopProduct = ({queryKey}) =>{
     const [_, time] = queryKey;
     return axios.get('/api/toproduct/?time='+time);
 }
+
+export const profileupdate = (data) =>{
+    return axios.put('/api/profileupdate/', data);
+}
+
+export const profileimageupload = (data) =>{
+    return axios.post('/api/profile/', data,{
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+}
