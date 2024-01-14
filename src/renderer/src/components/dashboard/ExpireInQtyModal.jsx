@@ -19,7 +19,7 @@ const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
     const { product_data, data } = useProductsData();
     const {settings} = useSetting();
 
-    const pdata = getBeforeExpireProduct(settings.expireshow);
+    const pdata = getBeforeExpireProduct(settings?.expireshow);
     const { t } = useTranslation();
 
     const [showEditQty, setShowEditQty] = useState(false);
@@ -105,7 +105,7 @@ const ExpireInModal = ({ show, setShow, oldSalesData, customerid }) => {
                 <div className="flex justify-between items-center p-2">
                     <div className='flex flex-row items-center'>
                         <i className='bi bi-package text-2xl mr-2'></i>
-                        <h1 className="text-xl font-bold">Expire in {settings.expireshow} days</h1>
+                        <h1 className="text-xl font-bold">Expire in {settings?.expireshow} days</h1>
                     </div>
                     <button className="text-red-500 p-3" onClick={() => setShow(false)}>X</button>
                 </div>

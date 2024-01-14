@@ -21,6 +21,7 @@ import OtherTable from './OtherTable';
 import ProfitnLossTable from './ProfitnLossTable';
 import SalesForm from './SalesForm';
 import { CartContextTempProvider } from './CartContextTempProvier';
+import VoucherView from '../custom_components/VoucherView';
 
 const SalesReport = () => {
 
@@ -96,10 +97,10 @@ const SalesReport = () => {
                                 {stardate.toLocaleDateString()} - {enddate.toLocaleDateString()}
                             </div>
                         </div>
-                     
+
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                        <div className="col-span-2 border">
+                        <div className="col-span-1 border">
                             <div className="bg-white  p-3">
                                 <div className='flex flex-row items-center'>
                                     <div className="text-md font-bold">
@@ -123,8 +124,12 @@ const SalesReport = () => {
                         </div>
                         <div className="col-span-1 border p-2">
 
-                            <SalesForm defaultname={selectedRow?.customerName} salesid={selectedRow?.receiptNumber} sales_data={sales_data} setSelectedRow={setSelectedRow}/>
+                            <SalesForm defaultname={selectedRow?.customerName} salesid={selectedRow?.receiptNumber} sales_data={sales_data} setSelectedRow={setSelectedRow} />
 
+                        </div>
+                        <div className="col-span-1 border p-2">
+
+                           <VoucherView data={selectedRow}/>
                         </div>
                         {/* Other Income */}
                     </div>

@@ -429,7 +429,7 @@ const Dashboard = () => {
                         <div className="flex flex-row items-center">
                             <i className='bi bi-box2-fill text-white text-5xl mr-2'></i>
                             <div>
-                                <h1 className='text-xl md:text-xl  font-bold text-white'>Expire in {settings.expireshow} days</h1>
+                                <h1 className='text-xl md:text-xl  font-bold text-white'>Expire in {settings?.expireshow} days</h1>
                                 <h1 className='text-xl mt-2 font-bold text-white'>{ExpireProducts?.length} Products</h1>
                             </div>
                         </div>

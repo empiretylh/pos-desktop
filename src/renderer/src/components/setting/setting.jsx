@@ -52,6 +52,20 @@ const Setting = () => {
         }
     })
 
+    const saveProfileImage = async (dataUrl) => {
+        const result = await ipcRenderer.invoke('save-profile-img', { imageurl: dataUrl });
+        console.log(result)
+    }
+
+    useEffect(() => {
+
+        if (profiledata?.profileimage) {
+            saveProfileImage(axios.defaults.baseURL + profiledata?.profileimage)
+        }
+    }, [profiledata?.profileimage]);
+
+
+
     // useEffect(() => {
     //     user_data.refetch();
     // }
@@ -141,11 +155,11 @@ const Setting = () => {
                             </div>
                             <div>
                                 {/* radio button discount is perctange or amount */}
-                                <input type="radio" id="percentage" name="discount" value="percentage" checked={settings.discount == 'percent'} onChange={(e) => {
+                                <input type="radio" id="percentage" name="discount" value="percentage" checked={settings?.discount == 'percent'} onChange={(e) => {
                                     if (e.target.value) ChangeSettings('percent', 'discount')
                                 }} />
                                 <label className='ml-2' htmlFor="percentage">{t('Percentage')}</label>
-                                <input type="radio" id="amount" name="discount" value="amount" className='ml-2' checked={settings.discount == 'amount'} onChange={(e) => {
+                                <input type="radio" id="amount" name="discount" value="amount" className='ml-2' checked={settings?.discount == 'amount'} onChange={(e) => {
                                     if (e.target.value) ChangeSettings('amount', 'discount')
                                 }} />
                                 <label className='ml-2' htmlFor="amount">{'Amount'}</label>
@@ -160,7 +174,7 @@ const Setting = () => {
                                 <h1 className="text-md ml-4">{t('Less Than')}</h1>
                             </div>
                             <div>
-                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings.lessthan} onChange={(e) => {
+                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings?.lessthan} onChange={(e) => {
                                     ChangeSettings(e.target.value, 'lessthan')
                                 }
                                 } />
@@ -175,7 +189,7 @@ const Setting = () => {
                                 <h1 className="text-md ml-4">{t('Expire Show Products in')}</h1>
                             </div>
                             <div>
-                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings.expireshow} onChange={(e) => {
+                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings?.expireshow} onChange={(e) => {
                                     ChangeSettings(e.target.value, 'expireshow')
                                 }
                                 } />
@@ -190,9 +204,9 @@ const Setting = () => {
                             </div>
                             <div>
                                 <input type="checkbox" id='showimage' className='border rounded-md p-2 mr-2 text-center' checked={settings?.showimage} onChange={(e) => {
-                              ChangeSettings(!settings?.showimage, 'showimage')
+                                    ChangeSettings(!settings?.showimage, 'showimage')
                                     console.log(e.target.value)
-                                    
+
                                 }
                                 } />
                                 <label className='ml-2' htmlFor="showimage">{'Show Image'}</label>

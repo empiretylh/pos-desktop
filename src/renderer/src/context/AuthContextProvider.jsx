@@ -31,6 +31,14 @@ const AuthProvider = ({ children }) => {
     getToken();
   }, [])
 
+  const saveProfileImage = async (dataUrl) => {
+    const result = await ipcRenderer.invoke('save-profile-img', { imageurl: dataUrl });
+    console.log(result)
+  }
+
+
+
+
 
   useEffect(() => {
     if (token) {
@@ -64,11 +72,17 @@ const AuthProvider = ({ children }) => {
     }
   }, [user_data.data]);
 
-  const profiledata = useMemo(()=>{
+  const profiledata = useMemo(() => {
     return user_data.data?.data
-  },[user_data.data])
+  }, [user_data.data])
 
 
+  
+  useEffect(() => {
+    if (profiledata?.profileimage) {
+      saveProfileImage(axios.defaults.baseURL + profiledata?.profileimage)
+    }
+  }, [profiledata?.profileimage])
   // Memoized value of the authentication context
   const contextValue = useMemo(
     () => ({
