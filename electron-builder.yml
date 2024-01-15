@@ -1,5 +1,5 @@
-appId: com.electron.app
-productName: pos-desktop
+appId: com.perfect.solution
+productName: Perfect Solution
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: pos-desktop
+  executableName: Perfect Solution
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

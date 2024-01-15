@@ -10,7 +10,6 @@ const request = require('request');
 const fs = require('fs');
 import axios from 'axios';
 
-
 function createWindow() {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -85,7 +84,9 @@ function createWindow() {
   const saveImagefrombase64 = async (base64) => {
     const base64Data = base64.replace(/^data:image\/png;base64,/, "");
     const filename = `voucher.png`;
-    const filepath = path.resolve(__dirname, '../../resources', filename);
+    
+    const tempDir = os.tmpdir();
+    const filepath = path.resolve(tempDir, filename);
 
     fs.writeFile(filepath, base64Data, 'base64', function (err) {
       console.log(err);
