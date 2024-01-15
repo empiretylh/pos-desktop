@@ -1,4 +1,4 @@
-import { app, shell, BrowserWindow, ipcRenderer, ipcMain } from 'electron'
+import { app, shell, BrowserWindow, ipcRenderer, ipcMain, remote } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
@@ -9,72 +9,6 @@ import * as path from "path";
 const request = require('request');
 const fs = require('fs');
 import axios from 'axios';
-
-
-const options = {
-  preview: false,
-  width: '170px',
-  margin: '0 0 0 0',
-  copies: 1,
-  printerName: 'POS-58-Series',
-  timeOutPerLine: 400,
-  pageSize: { height: 301000, width: 71000 } // page size
-}
-
-
-const data = [
-  {
-    type: 'image'
-    , path: path.join(__dirname, '../../resources/profile.png')
-    , position: 'center'
-    , width: '60px'
-    , height: '60px'
-  }
-]
-
-
-data.push({
-  type: 'text', value: 'Shop name', style: `text-align:center; font-weight: bold; font-size: 20px;`
-})
-
-data
-  .push({
-    type: 'text', value: 'Shop address', style: `text-align:center; font-weight: bold; font-size: 15px;`
-  });
-
-data
-  .push({
-    type: 'text', value: 'Shop phone', style: `text-align:center; font-weight: bold; font-size: 15px;`
-  });
-
-data
-  .push({
-    type: 'text', value: 'Shop email', style: `text-align:center; font-weight: bold; font-size: 15px;`
-  });
-
-// Line break
-data.push({
-  type: 'text', value: '------------------------------------------', style: `text-align:center; font-weight: bold; font-size: 15px;`
-});
-
-data.push({
-  type: 'table',
-  style: `border: 1px solid #ddd;`,
-  tableBody: [
-    [
-      'Receipt Number',
-      '000101'
-    ],
-    [
-      'Customer Name',
-      'Thura Lin Htut'
-    ],
-    [
-      'Date',
-      '2021-09-01'
-    ]
-  ]
-});
 
 
 function createWindow() {
@@ -149,7 +83,7 @@ function createWindow() {
   //save image and return path
   const saveImagefrombase64 = async (base64) => {
     const base64Data = base64.replace(/^data:image\/png;base64,/, "");
-    const filename = `image-${Date.now()}.png`;
+    const filename = `voucher.png`;
     const filepath = path.resolve(__dirname, '../../resources', filename);
 
     fs.writeFile(filepath, base64Data, 'base64', function (err) {
@@ -190,6 +124,17 @@ function createWindow() {
   });
 
 
+  ipcMain.handle('getAllPrinters', async (event, arg) => {
+    const printers = await event.sender.getPrintersAsync();
+    console.log(printers)
+    return printers;
+  });
+
+  
+
+  
+
+
   // HMR for renderer base on electron-vite cli.
   // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
@@ -216,12 +161,6 @@ app.whenReady().then(() => {
 
   createWindow()
 
-
-  PosPrinter.print(data, options)
-    .then(console.log)
-    .catch((error) => {
-      console.error(error);
-    });
 
 
   app.on('activate', function () {

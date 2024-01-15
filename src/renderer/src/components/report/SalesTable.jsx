@@ -9,7 +9,7 @@ import { useAlertShow } from '../custom_components/AlertProvider';
 
 const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment, customerid }) => {
     const { t } = useTranslation();
-
+    
 
     const filterData = useMemo(() => {
         if (data) {

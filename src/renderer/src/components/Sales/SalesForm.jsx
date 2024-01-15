@@ -10,6 +10,7 @@ import { useAlertShow } from '../custom_components/AlertProvider';
 import { useProductsData } from '../../context/ProductsDataProvider';
 import Loading from '../custom_components/Loading';
 import { useSetting } from '../../context/SettingContextProvider';
+import VoucherView from '../custom_components/VoucherView';
 
 
 const SalesForm = () => {
@@ -39,6 +40,11 @@ const SalesForm = () => {
     const [description, setDescription] = useState('');
     const [showDescription, setShowDescription] = useState(false);
     const [isSaveCustomer, setIsSaveCustomer] = useState(false);
+
+    const [print, setPrint] = useState(false);
+    const [printData, setPrintData] = useState(null);
+    
+    let IsPrint = false;
 
     useEffect(() => {
         if (customername) {
@@ -101,6 +107,13 @@ const SalesForm = () => {
         onSuccess: (data) => {
             console.log('onSuccess')
             console.log(data)
+            setPrintData(data.data); 
+
+            if(IsPrint){
+                setPrint(true);
+                console.log('Is print true');
+                IsPrint = false;
+            }
             setLoading(false);
             setCart([])
             setCustomername('')
@@ -113,9 +126,6 @@ const SalesForm = () => {
             customer_data.refetch();
             showNoti(t('RSC'), 'bi bi-check-circle text-green-500')
             product_data.refetch();
-
-
-
         },
         onError: (error) => {
             console.log('onError')
@@ -128,6 +138,10 @@ const SalesForm = () => {
 
     const onSubmit = (e) => {
         e.preventDefault();
+
+        // if user press eneter on Submit Normal Form
+        //  if user press cltrl enter on Submit Print Form
+
         if (cart.length < 1)
             return showInfo("", "Please Select Items")
 
@@ -225,7 +239,24 @@ const SalesForm = () => {
     return (
         <div>
             <Loading show={loading} />
-            <form ref={salesForm} className="flex flex-col overflow-x-hidden overflow-y-auto" onSubmit={onSubmit} >
+            <form
+            onKeyDown={(e)=>{
+                if(e.ctrlKey && e.key == 'Enter'){
+                    IsPrint = true;
+                    onSubmit(e)
+                }else if(e.altKey && e.key == 'Enter'){
+                    IsPrint = true;
+                    onSubmit(e)
+                }
+                
+                else if(e.key == 'Enter'){
+                    console.log("without Printer")
+                    IsPrint = false;
+                    onSubmit(e);
+                }
+            }
+            }
+             ref={salesForm} className="flex flex-col overflow-x-hidden overflow-y-auto" >
 
                 <label className="text-sm text-black font-bold mt-1">{t('Customer_Name')}</label>
                 <div className="flex flex-row items-center">
@@ -406,12 +437,24 @@ const SalesForm = () => {
                         </details>
 
                         {/* Create Receipt Button */}
+                        <VoucherView print={print} setPrint={setPrint} data={printData} />
                         <button
                             type="submit"
                             onClick={onSubmit}
                             className="bg-primary text-white rounded-md p-2 mt-2 w-full">
                             <i className="bi bi-receipt text-md select-none cursor-pointer"></i>{' '}
                             <label className="text-md font-mono select-none cursor-pointer">Create Receipt</label>
+                        </button>
+                        <button
+                            type="submit"
+                            onClick={(e)=>{
+                                onSubmit(e)
+                                IsPrint = true;
+                            
+                            }}
+                            className="bg-primary text-white rounded-md p-2 mt-2 w-full cursor-pointer">
+                            <i className="bi bi-printer text-md select-none cursor-pointer"></i>{' '}
+                            <label className="text-md font-mono select-none cursor-pointer">Create & Print Receipt</label>
                         </button>
 
                     </div>

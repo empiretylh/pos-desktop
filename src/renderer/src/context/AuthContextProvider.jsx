@@ -3,6 +3,8 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { useQuery } from "react-query";
 import { getUser } from "../server/api";
 
+const { ipcRenderer } = window.electron
+
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {

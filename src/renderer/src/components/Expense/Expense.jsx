@@ -192,6 +192,22 @@ const Expense = () => {
         }
     }, [selectedRow])
 
+    // press f5 to refersh data from server
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'F5') {
+                expense_data.refetch();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, []);
+
     return (
         <div className='flex flex-row h-screen'>
             <Navigation />

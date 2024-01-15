@@ -341,6 +341,20 @@ const Dashboard = () => {
         };
     }, [sales_data.data, salestime]);
 
+    //Press F5 to refresh data from server
+    useEffect(() => {
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'F5') {
+                sales_data.refetch();
+                expense_data.refetch();
+                topproduct_data.refetch();
+                product_data.refetch();
+                customer_data.refetch();
+                supplier_data.refetch();
+            }
+        })
+    }, [sales_data.data, expense_data.data, topproduct_data.data, product_data.data, customer_data.data, supplier_data.data])
+
     return (
         <div className='flex flex-row h-screen'>
             <Navigation />
@@ -350,7 +364,7 @@ const Dashboard = () => {
                     <Link to={'/sales'} className='w-full rounded-sm relative select-none cursor-pointer'>
                         <img src={IMAGE.d1} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                            <div className="flex flex-row items-center">
+                            <div className="flex flex-row">
                                 <i className='bi bi-cart-fill text-white text-5xl mr-2'></i>
                                 <div>
                                     <h1 className='text-2xl font-bold text-white'>{t('Sales')}</h1>
@@ -362,7 +376,7 @@ const Dashboard = () => {
                     <Link to={'/expense'} className='w-full rounded-sm relative select-none cursor-pointer'>
                         <img src={IMAGE.d2} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                            <div className="flex flex-row items-center">
+                            <div className="flex flex-row ">
                                 <i className='bi bi-stack text-white text-5xl mr-2'></i>
                                 <div>
                                     <h1 className='text-2xl font-bold text-white'>{t('Expense')}</h1>
@@ -374,7 +388,7 @@ const Dashboard = () => {
                     <Link to={'/products'} className='w-full rounded-sm relative select-none cursor-pointer'>
                         <img src={IMAGE.d3} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                            <div className="flex flex-row items-center">
+                            <div className="flex flex-row">
                                 <i className='bi bi-cash text-white text-5xl mr-2'></i>
                                 <div>
                                     <h1 className='text-2xl font-bold text-white'>{t('Purchase')}</h1>
@@ -386,10 +400,10 @@ const Dashboard = () => {
                     <Link to={'/products'} className='w-full rounded-sm relative select-none cursor-pointer'>
                         <img src={IMAGE.d4} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                         <div style={{ position: 'absolute', top: 10, left: 10 }}>
-                            <div className="flex flex-row items-center">
+                            <div className="flex flex-row ">
                                 <i className='bi bi-bag-dash-fill text-white text-5xl mr-2'></i>
-                                <div>
-                                    <h1 className='lg:text-xl md:text-xl  font-bold text-white'>{t('pd_balance_amount')}</h1>
+                                <div>   
+                                    <h1 className='lg:text-sm md:text-xl  font-bold text-white'>{t('pd_balance_amount')}</h1>
                                     <h1 className='text-xl mt-2 font-bold text-white'>{numberWithCommas(SumProductGetCost)} MMK</h1>
                                 </div>
                             </div>

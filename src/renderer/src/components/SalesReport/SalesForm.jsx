@@ -9,9 +9,10 @@ import { useProductsData } from '../../context/ProductsDataProvider';
 import Loading from '../custom_components/Loading';
 import { useCartTemp } from './CartContextTempProvier';
 import ProductTableModal from './ProductTableModal';
+import VoucherView from '../custom_components/VoucherView';
 
 
-const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRow }) => {
+const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRow, selectedRow }) => {
     const { t } = useTranslation();
 
     const salesForm = useRef(null);
@@ -19,6 +20,7 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
 
 
     const [loading, setLoading] = useState(false);
+    const [print, setPrint] = useState(false);
 
     const [customername, setCustomername] = useState(defaultname || 'Unknown');
     const [customershow, setCustomerShow] = useState(false);
@@ -385,11 +387,21 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
                             <i className="bi bi-trash text-md select-none cursor-pointer"></i>{' '}
                             <label className="text-md font-mono select-none cursor-pointer">Delete Receipt</label>
                         </button>
+                        <button
+                            type="button"
+                            onClick={() => {
+                               setPrint(true)
+                            }}
+                            className="bg-green-500 text-white rounded-md p-2 mt-2 w-full">
+                            <i className="bi bi-printer text-md select-none cursor-pointer"></i>{' '}
+                            <label className="text-md font-mono select-none cursor-pointer">Print Receipt</label>
+                        </button>
 
                     </div>
                 </div>
 
             </form >
+            <VoucherView data={selectedRow} print={print} setPrint={setPrint} />
             <ProductTableModal show={showpdtable} setShow={setShowpdtable} setSelectProduct={setSelectedProduct} selectedProduct={selectedProduct} />
         </div >
     )

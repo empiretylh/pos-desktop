@@ -14,6 +14,10 @@ const SettingDataProvider = ({ children }) => {
         lessthan : 10,
         expireshow : 7,
         showimage: false,
+        printerName : 'POS-58-Series',
+        paperWidth : 300,
+        footertext : 'Thank For You Shopping',
+        printSilent : false,
     })
 
 

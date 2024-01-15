@@ -13,6 +13,7 @@ import Supplier from "../components/Supplier/Supplier";
 import Report from "../components/report/Report";
 import SalesReport from "../components/SalesReport/SalesReport";
 import Setting from "../components/setting/setting";
+import Register from "../components/auth/Register";
 
 const Routes = () => {
   const { token } = useAuth();
@@ -114,6 +115,11 @@ const Routes = () => {
       element: <Login />,
       errorElement: <Navigate to="/" />
     },
+    {
+      path:'/register',
+      element : <Register/>,
+      errorElement: <Navigate to="/" />
+    }
   ];
 
 

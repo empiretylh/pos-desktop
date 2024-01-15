@@ -138,6 +138,32 @@ const Customer = () => {
 
     const [showSelectedSales, setShowSelectedSales] = useState(false);
 
+    // press f5 to refersh data from server
+
+    const searchref = useRef();
+    const searchref2 = useRef();
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'F5') {
+                customer_data.refetch();
+            }
+            if(e.altKey && e.key == 'c'){
+                searchref.current.focus();
+            }
+            if(e.altKey && e.key == 'f'){
+                searchref2.current.focus();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }
+        , [])
+
     return (
         <div className='flex flex-row h-screen'>
             <Navigation />
@@ -160,6 +186,7 @@ const Customer = () => {
                             <div className="flex flex-row items-center w-full">
                                 <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
                                 <input type="text"
+                                    ref={searchref}
                                     className="border border-gray-300 rounded-md w-full p-2 mr-3"
                                     placeholder={t('Search Customer')} onChange={(e) => setCustomer_SearchText(e.target.value)} />
 
@@ -242,7 +269,7 @@ const Customer = () => {
                             </div>
                             <div className="flex flex-row items-center mt-3 w-full">
                                 <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
-                                <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Receipt Number')} onChange={(e) => setSearchtext(e.target.value)} />
+                                <input ref={searchref2} type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Receipt Number')} onChange={(e) => setSearchtext(e.target.value)} />
                                 <button className='bg-primary hover:bg-blue-600 text-white rounded-md p-2 whitespace-nowrap mr-2'
                                     onClick={() => {
                                         setShowSelectedSales(true);

@@ -82,7 +82,9 @@ const Login = () => {
 
                         <button type="submit" className="bg-primary py-2 rounded-md w-full text-white font-bold hover:bg-cyan-600">Login</button>
 
-                        <button type="button" className="bg-primary py-2 mt-2 rounded-md w-full text-white font-bold hover:bg-cyan-600">Register</button>
+                        <button type="button" onClick={()=>{
+                            window.location.href="/register"
+                        }} className="bg-primary py-2 mt-2 rounded-md w-full text-white font-bold hover:bg-cyan-600">Register</button>
 
                     </form>
 

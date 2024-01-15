@@ -256,6 +256,25 @@ const Report = () => {
         , [profit_data.data, time, type, stardate, enddate])
 
 
+        // press f5 to refersh data from server
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'F5') {
+                sales_data.refetch();
+                otherincome_data.refetch();
+                expense_data.refetch();
+                profit_data.refetch();
+            }
+        }
+
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }, []);
+
 
 
     return (

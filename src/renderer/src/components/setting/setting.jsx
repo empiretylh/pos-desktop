@@ -1,28 +1,17 @@
-import react, { useState, useEffect, useTransition, useMemo, useRef } from 'react';
-import { useMutation, useQuery } from 'react-query';
+import axios from 'axios';
+import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useMutation } from 'react-query';
 import { APPNAME } from '../../config/config';
 import { IMAGE } from '../../config/image';
-import TextInput from '../custom_components/TextInput';
-import { getExpense, getSales, getTopProduct, login, profileimageupload } from '../../server/api';
 import { useAuth } from '../../context/AuthContextProvider';
-const { ipcRenderer } = window.electron
-import axios from 'axios';
-import Navigation from '../custom_components/Navigation';
-import Loading from '../custom_components/Loading';
-import { useTranslation } from 'react-i18next';
-import numberWithCommas from '../custom_components/NumberWithCommas';
-import PieChart from './PieChart';
-import TopMoneyTable from './TopMoneyTable';
-import SaleChart from './SaleChart';
-import SalesTable from './SalesTable';
-import { LessThanProduct, getBeforeExpireProduct, useProductsData } from '../../context/ProductsDataProvider';
-import { useCustomerData } from '../../context/CustomerProvider';
-import { useSupplierData } from '../../context/SupplierProvider';
-import LessThanQtyModal from './LessThanQtyModal';
-import EditProfileModal from './EditProfileModal';
-import { Link } from 'react-router-dom';
-import { useAlertShow } from '../custom_components/AlertProvider';
 import { useSetting } from '../../context/SettingContextProvider';
+import { profileimageupload } from '../../server/api';
+import { useAlertShow } from '../custom_components/AlertProvider';
+import Loading from '../custom_components/Loading';
+import Navigation from '../custom_components/Navigation';
+import EditProfileModal from './EditProfileModal';
+const { ipcRenderer } = window.electron
 
 const Setting = () => {
 
@@ -63,6 +52,17 @@ const Setting = () => {
             saveProfileImage(axios.defaults.baseURL + profiledata?.profileimage)
         }
     }, [profiledata?.profileimage]);
+
+    const [avaliablePrinters, setAvaliablePrinters] = useState([]);
+
+    const printerelectron = async () => {
+        const result = await ipcRenderer.invoke('getAllPrinters');
+        setAvaliablePrinters(result);
+    }
+
+    useEffect(() => {
+        printerelectron();
+    }, [])
 
 
 
@@ -210,6 +210,55 @@ const Setting = () => {
                                 }
                                 } />
                                 <label className='ml-2' htmlFor="showimage">{'Show Image'}</label>
+                            </div>
+                        </div>
+
+                        <div className='flex flex-row justify-between items-center mt-2'>
+                            <div className='flex flex-row items-center'>
+                                <i className='bi bi-printer text-xl' />
+                                <h1 className="text-md  ml-4 ">{'Printer'}</h1>
+                            </div>
+                            <div>
+                                <input type="checkbox" id='printsilent' className='border rounded-md p-2 mr-2 text-center' checked={settings?.printSilent}
+                                    onChange={(e) => {
+                                        ChangeSettings(!settings?.printSilent, 'printSilent')
+                                    }
+                                    }
+                                />
+                                <label className='ml-1 mr-2' htmlFor="printsilent">{'Print Silent'}</label>
+                                <select className='border rounded-md p-2' value={settings?.printerName} onChange={(e) => {
+                                    ChangeSettings(e.target.value, 'printerName')
+                                }}>
+
+                                    {avaliablePrinters?.map((item) =>
+                                        <option value={item.name}>{item.name}</option>)}
+                                </select>
+                            </div>
+                        </div>
+                        <div className='flex flex-row justify-between items-center mt-2'>
+                            <div className='flex flex-row items-center'>
+                                <i className='bi bi-receipt text-xl' />
+                                <h1 className="text-md ml-4">{t('Voucher Width')}</h1>
+                            </div>
+                            <div>
+                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings?.paperWidth} onChange={(e) => {
+                                    ChangeSettings(e.target.value, 'paperWidth')
+                                }
+                                } />
+                                px
+                            </div>
+                        </div>
+                        <div className='flex flex-col mt-2'>
+                            <div className='flex flex-row items-center'>
+                                <i className='bi bi-grip-horizontal text-xl' />
+                                <h1 className="text-md ml-4">{t('Voucher Footer Text')}</h1>
+                            </div>
+                            <div>
+                                <textarea type="textarea" multiple className='border rounded-md p-2 w-full mr-2 mt-2' value={settings?.footertext} onChange={(e) => {
+                                    ChangeSettings(e.target.value, 'footertext')
+                                }
+                                } />
+                             
                             </div>
                         </div>
 

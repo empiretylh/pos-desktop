@@ -64,7 +64,7 @@ const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSe
                             <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.tax))}</td>
                             <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.discount))}</td>
                             <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.deliveryCharges))}</td>
-                            <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal))}</td>
+                            <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.totalAmount))}</td>
 
                             <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
                             <td className='border px-2 py-1 text-right'>{item.description}</td>

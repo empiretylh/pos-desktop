@@ -10,3 +10,5 @@ Delete Products & Category  = Ctrl + Del
 Clear form = Alt + Del
 
 Reload Data from Server : F5
+
+Print Sales Voucher  = Ctrl + ENTER or Alt + Enter  

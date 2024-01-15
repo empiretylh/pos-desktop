@@ -46,6 +46,8 @@ const SalesReport = () => {
 
     const [searchtext, setSearchtext] = useState('');
 
+    const [print, setPrint] = useState(false);
+
 
     useEffect(() => {
         sales_data.refetch();
@@ -100,7 +102,7 @@ const SalesReport = () => {
 
                     </div>
                     <div className="grid grid-cols-3 gap-2">
-                        <div className="col-span-1 border">
+                        <div className="col-span-2 border">
                             <div className="bg-white  p-3">
                                 <div className='flex flex-row items-center'>
                                     <div className="text-md font-bold">
@@ -124,13 +126,10 @@ const SalesReport = () => {
                         </div>
                         <div className="col-span-1 border p-2">
 
-                            <SalesForm defaultname={selectedRow?.customerName} salesid={selectedRow?.receiptNumber} sales_data={sales_data} setSelectedRow={setSelectedRow} />
+                            <SalesForm defaultname={selectedRow?.customerName} salesid={selectedRow?.receiptNumber} sales_data={sales_data} setSelectedRow={setSelectedRow}  selectedRow={selectedRow}/>
 
                         </div>
-                        <div className="col-span-1 border p-2">
-
-                           <VoucherView data={selectedRow}/>
-                        </div>
+                       
                         {/* Other Income */}
                     </div>
                 </div>
