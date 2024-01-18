@@ -117,7 +117,7 @@ function createWindow() {
       }
     ]
 
-    PosPrinter.print(data, arg.options)
+    PosPrinter.print(arg.data, arg.options)
       .then(console.log)
       .catch((error) => {
         console.error(error);
