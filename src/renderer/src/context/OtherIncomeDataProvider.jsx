@@ -2,6 +2,7 @@ import react, { createContext, useContext, useEffect, useMemo } from 'react';
 import { useAuth } from './AuthContextProvider';
 import { useQuery } from 'react-query';
 import { getOtherIncome } from '../server/api';
+import axios from 'axios';
 
 const OtherIncomeDataContext = createContext();
 
@@ -20,6 +21,7 @@ const OtherIncomeDataProvider = ({ children }) => {
 
     useEffect(() => {
         if (token) {
+            axios.defaults.headers.common = { Authorization: `Token ${token}` };
             otherincome_data.refetch();
         }
     }, [token])

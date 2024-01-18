@@ -218,15 +218,15 @@ const Setting = () => {
                                 <i className='bi bi-printer text-xl' />
                                 <h1 className="text-md  ml-4 ">{'Printer'}</h1>
                             </div>
-                            <div>
+                            <div className="flex flex-row items-center ml-3">
                                 <input type="checkbox" id='printsilent' className='border rounded-md p-2 mr-2 text-center' checked={settings?.printSilent}
                                     onChange={(e) => {
                                         ChangeSettings(!settings?.printSilent, 'printSilent')
                                     }
                                     }
                                 />
-                                <label className='ml-1 mr-2' htmlFor="printsilent">{'Print Silent'}</label>
-                                <select className='border rounded-md p-2' value={settings?.printerName} onChange={(e) => {
+                                <label className='ml-1 mr-2 whitespace-nowrap' htmlFor="printsilent">{'Print Silent'}</label>
+                                <select className='border rounded-md p-2 max-w-[300px]' value={settings?.printerName} onChange={(e) => {
                                     ChangeSettings(e.target.value, 'printerName')
                                 }}>
 

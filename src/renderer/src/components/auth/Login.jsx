@@ -8,6 +8,7 @@ import { useAuth } from '../../context/AuthContextProvider';
 const { ipcRenderer } = window.electron
 import axios from 'axios';
 import Loading from '../custom_components/Loading';
+import { Navigate } from 'react-router-dom';
 
 const Login = () => {
 
@@ -16,7 +17,7 @@ const Login = () => {
 
     const [loading, setLoading] = useState(false);
 
-    const { setToken } = useAuth();
+    const { setToken, user_data } = useAuth();
 
     const post_server = useMutation(login, {
         onMutate: () => {
@@ -25,12 +26,16 @@ const Login = () => {
         onSuccess: res => {
             setLoading(false);
 
+            localStorage.setItem("token", res.data.token);
+
             setToken(res.data.token)
             axios.defaults.headers.common = {
                 Authorization: `Token ${res.data.token}`,
             };
 
-            window.location.href = "/"
+            user_data.refetch();
+
+            window.location.href = '/dashboard'
         },
         onError:err=>{
             console.log(err)

@@ -31,9 +31,9 @@ const CategorySelect = ({ selectedCategory = "All", setSelectedCategory }) => {
                 <div
                     onClick={() => setSelectedCategory("All")}
                     className={`inline-block p-2 whitespace-nowrap mx-2 ${selectedCategory == 'All' ? " bg-gray-800 text-white font-bold" : "bg-slate-300 text-black"} select-none rounded-md cursor-pointer`}>All</div>
-                {data.map((item, index) => (
+                {data?.map((item, index) => (
                     <div
-                        onClick={() => setSelectedCategory(item.id)}
+                        onClick={() => setSelectedCategory(item?.id)}
                         key={index} className={`inline-block p-2 whitespace-nowrap mx-2 ${selectedCategory == item.id ? " bg-gray-800 text-white font-bold" : "bg-slate-300 text-black"} select-none rounded-md cursor-pointer`}>{item.title}</div>
                 ))}
             </div>

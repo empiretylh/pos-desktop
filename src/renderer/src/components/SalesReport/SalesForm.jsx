@@ -401,7 +401,7 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
                 </div>
 
             </form >
-            <VoucherView data={selectedRow} print={print} setPrint={setPrint} />
+            <VoucherView data={selectedRow} print={true} setPrint={setPrint} />
             <ProductTableModal show={showpdtable} setShow={setShowpdtable} setSelectProduct={setSelectedProduct} selectedProduct={selectedProduct} />
         </div >
     )

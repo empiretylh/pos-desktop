@@ -117,11 +117,11 @@ function createWindow() {
       }
     ]
 
-    PosPrinter.print(data, arg.options)
-      .then(console.log)
-      .catch((error) => {
-        console.error(error);
-      });
+    // PosPrinter.print(data, arg.options)
+    //   .then(console.log)
+    //   .catch((error) => {
+    //     console.error(error);
+    //   });
 
   });
 

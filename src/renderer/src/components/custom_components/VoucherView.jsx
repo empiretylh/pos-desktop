@@ -65,7 +65,7 @@ const VoucherView = ({ data, print, setPrint }) => {
     useEffect(() => {
         if (print) {
             snapshot();
-            setPrint(false);
+            // setPrint(false);
         }
         console.log('Printing')
 
@@ -73,9 +73,13 @@ const VoucherView = ({ data, print, setPrint }) => {
 
 
     return (
-        <div className={`fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center scale-0 duration-300 ${print ? 'scale-100' : ''}`}>
+        <div className={`fixed top-0 left-0 w-full h-full bg-gray-500 bg-opacity-50 flex justify-center items-center scale-0 duration-300 ${print ? 'scale-100' : ''}`}
+            style={{
+                 zIndex:999999 
+            }}
+        >
             <div className="bg-white rounded-lg">
-                <div ref={viewRef} style={{ backgroundColor: 'white', padding: 0, width: paperWidth+'px' }}>
+                <div ref={viewRef} style={{ backgroundColor: 'white', padding: 0, width: '210mm', height:'297mm'}}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className='mb-2'>
                         <img
                             src={
