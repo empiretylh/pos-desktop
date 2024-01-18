@@ -43,10 +43,8 @@ const VoucherView = ({ data, print, setPrint }) => {
         copies: 1,
         printerName: settings?.printerName || 'POS-58-Series',
         timeOutPerLine: 400,
-        pageSize: { height: 301000, width: 71000 },
-        silent : settings?.printSilent,
-        
-    
+        pageSize: '58mm', // 58mm x 210mm
+        silent : false,
     }
 
 
@@ -57,7 +55,7 @@ const VoucherView = ({ data, print, setPrint }) => {
                 // link.download = 'my-image-name.jpeg';
                 // link.href = dataurl;
                 // link.click();
-                ipcRenderer.invoke('print-image', { image: dataurl, options: options, width_img: '200px', height_img: 'auto' });
+                ipcRenderer.invoke('print-image', { image: dataurl, options: options, width_img: '300px', height_img: 'auto' });
             }
         )
     }
@@ -65,7 +63,7 @@ const VoucherView = ({ data, print, setPrint }) => {
     useEffect(() => {
         if (print) {
             snapshot();
-            // setPrint(false);
+            setPrint(false);
         }
         console.log('Printing')
 
@@ -79,7 +77,7 @@ const VoucherView = ({ data, print, setPrint }) => {
             }}
         >
             <div className="bg-white rounded-lg">
-                <div ref={viewRef} style={{ backgroundColor: 'white', padding: 0, width: '210mm', height:'297mm'}}>
+                <div ref={viewRef} style={{ backgroundColor: 'white', padding: 0, width: '300px', height:'auto'}}>
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className='mb-2'>
                         <img
                             src={

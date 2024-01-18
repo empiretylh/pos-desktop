@@ -4,7 +4,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import os from 'os'
 import uuid from 'uuid';
-import { PosPrinter, PosPrintData, PosPrintOptions } from '@alvarosacari/electron-pos-printer'
+import { PosPrinter, PosPrintData, PosPrintOptions } from '@3ksy/electron-pos-printer'
 import * as path from "path";
 const request = require('request');
 const fs = require('fs');
@@ -117,11 +117,11 @@ function createWindow() {
       }
     ]
 
-    // PosPrinter.print(data, arg.options)
-    //   .then(console.log)
-    //   .catch((error) => {
-    //     console.error(error);
-    //   });
+    PosPrinter.print(data, arg.options)
+      .then(console.log)
+      .catch((error) => {
+        console.error(error);
+      });
 
   });
 
