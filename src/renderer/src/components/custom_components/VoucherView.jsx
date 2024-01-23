@@ -15,10 +15,13 @@ const VoucherView = ({ data, print, setPrint }) => {
 
     const { settings } = useSetting();
 
-    const [paperWidth, setPaperWidth] = useState(settings?.paperwidth || 300);
+    const [paperWidth, setPaperWidth] = useState(settings?.paperwidth || 500);
+    const [paper, setPaper] = useState(settings?.paper || '58');
 
     useEffect(() => {
-        setPaperWidth(settings?.paperwidth || 300);
+        setPaperWidth(settings?.paperwidth || 500);
+        setPaper(settings?.paper || '58')
+        
     }, [settings])
 
     const nameWidth = 200;
@@ -37,56 +40,36 @@ const VoucherView = ({ data, print, setPrint }) => {
         )
     };
 
-
-    const options = {
-        margin: '0 0 0 0',
-        copies: 1,
-        printerName: settings?.printerName || 'POS-58-Series',
-        timeOutPerLine: 400,
-        pageSize: '80mm', // 58mm x 210mm
-        silent: false,
+    const printOptions = {
+        printerName : settings?.printerName,
     }
-
-
     const snapshot = () => {
-        toPng(viewRef.current, { pixelRatio: 10 }).then(
+        toPng(viewRef.current, { pixelRatio: 5 }).then(
             (dataurl) => {
-                // const link = document.createElement('a');
-                // link.download = 'my-image-name.jpeg';
-                // link.href = dataurl;
-                // link.click();
 
-                let data = [
-                    {
+                const img = new Image();
+                img.onload = function () {
+                    const aspectRatio = this.width / this.height;
+                    const printableWidth = paperWidth;
+                    const printableHeight = printableWidth / aspectRatio;
+                    ipcRenderer.invoke('print-image', {
+                        image: dataurl,
+                        options : printOptions,
+                        width_img: printableWidth,
+                        height_img: printableHeight,
+                        paper : paper,
+                    });
+                }
+                img.src = dataurl;
 
-                        type: 'table',
-                        // style the table
-                        style: { border: '1px solid #ddd' },
-                        // list of the columns to be rendered in the table header
-                        tableHeader: ['Animal', 'Age'],
-                        // multi dimensional array depicting the rows and columns of the table body
-                        tableBody: [
-                            ['Cat', 2],
-                            ['Dog', 4],
-                            ['Horse', 12],
-                            ['Pig', 4],
-                        ],
-                        // list of columns to be rendered in the table footer
-                        tableFooter: ['Animal', 'Age'],
-                        // custom style for the table header
-                        tableHeaderStyle: { backgroundColor: '#000', color: 'white' },
-                        // custom style for the table body
-                        tableBodyStyle: { 'border': '0.5px solid #ddd' },
-                        // custom style for the table footer
-                        tableFooterStyle: { backgroundColor: '#000', color: 'white' },
-
-                    }
-                ]
-                ipcRenderer.invoke('print-image', { image: dataurl, options: options, width_img: '300px', height_img: 'auto', data: data });
             }
         )
     }
 
+    const micronsToPixel = (microns, dpi) => {
+        return microns * (dpi / 25.4) / 1000;
+    };
+    
     useEffect(() => {
         if (print) {
             snapshot();
@@ -95,6 +78,23 @@ const VoucherView = ({ data, print, setPrint }) => {
         console.log('Printing')
 
     }, [print])
+
+    //if user press esc setPrint to false
+
+    useEffect(() => {
+        const handleEsc = (event) => {
+            if (event.keyCode === 27) {
+                setPrint(false);
+            }
+        };
+        window.addEventListener('keydown', handleEsc);
+
+        return () => {
+            window.removeEventListener('keydown', handleEsc);
+        };
+        
+    }, []);
+
 
 
     return (
@@ -143,13 +143,13 @@ const VoucherView = ({ data, print, setPrint }) => {
                         <p style={{ fontSize: 16, fontWeight: 'bold', width: priceWidth, textAlign: 'right' }}>Price</p>
                         <p style={{ fontSize: 16, fontWeight: 'bold', width: totalWidth, textAlign: 'right' }}>Total</p>
                     </div>
-                    {/* You need to convert the FlatList to a map function */}
+                   
                     {data?.sproduct?.map(item => renderItem(item))}
                     <div className="border w-full h-[3px] bg-black mt-2" />
                     <div className='my-2' style={{ display: 'flex', justifyContent: 'space-between' }}>
                         <p style={{ fontSize: 16, fontWeight: 'bold' }}>{t('Total Amount')}:{' '}</p>
                         <p style={{ fontSize: 16 }}>{numberWithCommas(data?.totalAmount)} Ks</p>
-                    </div>
+                    </div> 
                     {data?.tax === '0' ? null : (
                         <div className="my-2" style={{ display: 'flex', justifyContent: 'space-between' }}>
                             <p style={{ fontSize: 16, fontWeight: 'bold' }}>{t('Tax')}:{' '}</p>
@@ -206,6 +206,7 @@ const VoucherView = ({ data, print, setPrint }) => {
                         </>
                     )}
                     <p style={{ textAlign: 'center', marginTop: '10px' }}>{settings?.footertext}</p>
+               
                 </div>
             </div>
         </div>

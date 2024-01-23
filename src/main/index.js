@@ -84,7 +84,7 @@ function createWindow() {
   const saveImagefrombase64 = async (base64) => {
     const base64Data = base64.replace(/^data:image\/png;base64,/, "");
     const filename = `voucher.png`;
-    
+
     const tempDir = os.tmpdir();
     const filepath = path.resolve(tempDir, filename);
 
@@ -100,30 +100,56 @@ function createWindow() {
     let image_dataurl = arg.image;
 
     let filepath = await saveImagefrombase64(image_dataurl);
+    // let filepath ="C:/Users/Kaung Si Thu Hein\Downloads\thura.png"
 
-    console.log(filepath)
+    // console.log(filepath)
 
-    let width = arg.width_img;
-    let height = arg.height_img;
+    console.log(arg.width_img, arg.height_img)
 
-    const data = [
-      {
-        type: 'image'
-        , path: filepath
-        , position: 'center'
-        , width: width
-        , height: height,
+    const printWindow = new BrowserWindow({
+      show: false,
+      width: arg.width_img,
+      height: arg.height_img,
+      webPreferences: {
+        nodeIntegration: true,
 
       }
-    ]
+    });
 
-    PosPrinter.print(arg.data, arg.options)
-      .then(console.log)
-      .catch((error) => {
-        console.error(error);
+
+    let customPageSize = {
+      width : arg.paper == '58' ? 580000 : 800000,
+      height : arg.paper == '58' ? 2100000 : 32760000,
+    }
+
+    console.log(customPageSize) 
+
+
+    printWindow.loadURL(path.join(__dirname, '../../resources/print.html?image=' + filepath + '&width=' + arg.width_img + '&height=' + arg.height_img));
+    printWindow.webContents.on('did-finish-load', () => {
+      printWindow.webContents.print({
+        silent: true,
+        printBackground: true,
+        deviceName: arg.options.printerName,
+        margins: {
+          marginType:'printableArea'
+        },
+
+        pageRanges: '1-1',
+        pageSize: arg.paper == '58' ||  arg.paper == '80' ? customPageSize : arg.paper,
+        
       });
 
+      setTimeout(() => {
+       printWindow.close();
+      }, 3000);
+    }
+    );
+
+
   });
+
+
 
 
   ipcMain.handle('getAllPrinters', async (event, arg) => {
@@ -132,9 +158,9 @@ function createWindow() {
     return printers;
   });
 
-  
 
-  
+
+
 
 
   // HMR for renderer base on electron-vite cli.
@@ -183,3 +209,8 @@ app.on('window-all-closed', () => {
 
 // In this file you can include the rest of your app"s specific main process
 // code. You can also put them in separate files and require them here.
+
+
+const pixelToMicrons = (pixels, dpi=203) => {
+  return pixels * (25.4 / dpi) * 1000;
+};

@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <style>
+        body{
+            margin: 0;
+            padding: 0;
+          
+        }
+    </style>
+    <script>
+        window.onload = function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const imgsrc = urlParams.get('image');
+            document.getElementById('myImage').src = imgsrc;
+
+            const width = urlParams.get('width');
+            const height = urlParams.get('height');
+            console.log(width, height)
+            document.getElementById('myImage').style.width = width+'px';
+            document.getElementById('myImage').style.height = height+'px';
+            document.getElementById('myImage').style.objectFit = 'cover';
+
+        }
+    </script>
+</head>
+<body>
+   <img id="myImage" >
+</body>
+</html>

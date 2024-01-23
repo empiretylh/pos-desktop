@@ -11,6 +11,7 @@ import { useAlertShow } from '../custom_components/AlertProvider';
 import Loading from '../custom_components/Loading';
 import Navigation from '../custom_components/Navigation';
 import EditProfileModal from './EditProfileModal';
+import VoucherProperties from './VoucherProperties';
 const { ipcRenderer } = window.electron
 
 const Setting = () => {
@@ -52,6 +53,8 @@ const Setting = () => {
             saveProfileImage(axios.defaults.baseURL + profiledata?.profileimage)
         }
     }, [profiledata?.profileimage]);
+
+    const [showVP, setShowVP] = useState(false);
 
     const [avaliablePrinters, setAvaliablePrinters] = useState([]);
 
@@ -238,14 +241,15 @@ const Setting = () => {
                         <div className='flex flex-row justify-between items-center mt-2'>
                             <div className='flex flex-row items-center'>
                                 <i className='bi bi-receipt text-xl' />
-                                <h1 className="text-md ml-4">{t('Voucher Width')}</h1>
+                                <h1 className="text-md ml-4">{t('Voucher')}</h1>
                             </div>
                             <div>
-                                <input type="number" className='border rounded-md p-2 w-[100px] mr-2 text-center' value={settings?.paperWidth} onChange={(e) => {
-                                    ChangeSettings(e.target.value, 'paperWidth')
-                                }
-                                } />
-                                px
+                                <button className='bg-white-500 border hover:bg-slate-100 p-2 rounded-md' onClick={()=>{
+                                    setShowVP(true);
+                                }}>
+                                    <i className='bi bi-gear text-black mr-2' />
+                                    Properties
+                                </button>
                             </div>
                         </div>
                         <div className='flex flex-col mt-2'>
@@ -258,7 +262,7 @@ const Setting = () => {
                                     ChangeSettings(e.target.value, 'footertext')
                                 }
                                 } />
-                             
+
                             </div>
                         </div>
 
@@ -292,6 +296,7 @@ const Setting = () => {
                 </div>
             </div>
             <EditProfileModal show={editshow} setShow={setEditShow} data={profiledata} />
+            <VoucherProperties show={showVP} setShow={setShowVP} data={settings} />
         </div>
     )
 }
