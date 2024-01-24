@@ -56,12 +56,5 @@ const SettingDataProvider = ({ children }) => {
 
 export const useSetting = () => useContext(SettingDataContext);
 
-export const IDToCategory = (id) => {
-    const { data } = useSetting();
-    if (data) {
-        const category = data.find(item => item.id === id);
-        return category?.title;
-    }
-}
 
 export default SettingDataProvider;

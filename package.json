@@ -21,6 +21,7 @@
     "@electron-toolkit/preload": "^2.0.0",
     "@electron-toolkit/utils": "^2.0.0",
     "@electron/remote": "^2.1.1",
+    "@tailwindcss/aspect-ratio": "^0.4.2",
     "axios": "^1.6.2",
     "bootstrap-icons": "^1.11.2",
     "chart.js": "^4.4.1",
@@ -32,6 +33,7 @@
     "react-minimal-pie-chart": "^8.4.0",
     "react-query": "^3.39.3",
     "react-router-dom": "^6.20.1",
+    "react-zoom-pan-pinch": "^3.3.0",
     "request": "^2.88.2",
     "uuid": "^9.0.1",
     "yarn": "^1.22.21"

@@ -16,6 +16,7 @@ import ExpenseDataProvider from './context/ExpenseDataProvider';
 import OtherIncomeDataProvider from './context/OtherIncomeDataProvider';
 import SupplierDataProvider from './context/SupplierProvider';
 import SettingDataProvider from './context/SettingContextProvider';
+import CustomVoucherDataProvider from './context/CustomVoucherProvider';
 
 
 axios.defaults.baseURL = domainURL
@@ -38,8 +39,9 @@ function App() {
                     <OtherIncomeDataProvider>
                       <CustomerDataProvider>
                         <CartContextProvider>
-
-                          <Routes />
+                          <CustomVoucherDataProvider>
+                            <Routes />
+                          </CustomVoucherDataProvider>
                         </CartContextProvider>
                       </CustomerDataProvider>
                     </OtherIncomeDataProvider>
