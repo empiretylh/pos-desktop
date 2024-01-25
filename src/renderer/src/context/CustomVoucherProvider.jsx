@@ -45,7 +45,24 @@ const CustomVoucherDataProvider = ({ children }) => {
         itemFontsize: 6,
         headerpadding: '20px 20px 0px 20px',
 
+        isnocol : true,
+        isprodcutcol : true,
+        isqtycol: true,
+        ispricecol: true,
+        istotalcol: true,
 
+        isvoucherrow : true,
+        iscustomerrow : true,
+        isdaterow : true,
+        istotalamountrow : true,
+        istaxrow : true,
+        isdeliverychargesrow : true,
+        isdiscountrow : true,
+        isgrandtotalrow : true,
+        ispaymentamountrow : true,
+        isremainingamountrow : true,
+        isdescriptionrow : true,
+        isfootertextrow : true,
     })
 
 

@@ -11,6 +11,7 @@ import { useProductsData } from '../../context/ProductsDataProvider';
 import Loading from '../custom_components/Loading';
 import { useSetting } from '../../context/SettingContextProvider';
 import VoucherView from '../custom_components/VoucherView';
+import CustomVoucher from '../custom_components/CustomVoucherView';
 
 
 const SalesForm = () => {
@@ -43,7 +44,7 @@ const SalesForm = () => {
 
     const [print, setPrint] = useState(false);
     const [printData, setPrintData] = useState(null);
-    
+
     let IsPrint = false;
 
     useEffect(() => {
@@ -107,9 +108,9 @@ const SalesForm = () => {
         onSuccess: (data) => {
             console.log('onSuccess')
             console.log(data)
-            setPrintData(data.data); 
+            setPrintData(data.data);
 
-            if(IsPrint){
+            if (IsPrint) {
                 setPrint(true);
                 console.log('Is print true');
                 IsPrint = false;
@@ -199,7 +200,7 @@ const SalesForm = () => {
 
         if (settings?.discount == 'amount') {
             data.isDiscountAmount = true
-          }
+        }
 
         console.log(data)
 
@@ -240,23 +241,23 @@ const SalesForm = () => {
         <div>
             <Loading show={loading} />
             <form
-            onKeyDown={(e)=>{
-                if(e.ctrlKey && e.key == 'Enter'){
-                    IsPrint = true;
-                    onSubmit(e)
-                }else if(e.altKey && e.key == 'Enter'){
-                    IsPrint = true;
-                    onSubmit(e)
+                onKeyDown={(e) => {
+                    if (e.ctrlKey && e.key == 'Enter') {
+                        IsPrint = true;
+                        onSubmit(e)
+                    } else if (e.altKey && e.key == 'Enter') {
+                        IsPrint = true;
+                        onSubmit(e)
+                    }
+
+                    else if (e.key == 'Enter') {
+                        console.log("without Printer")
+                        IsPrint = false;
+                        onSubmit(e);
+                    }
                 }
-                
-                else if(e.key == 'Enter'){
-                    console.log("without Printer")
-                    IsPrint = false;
-                    onSubmit(e);
                 }
-            }
-            }
-             ref={salesForm} className="flex flex-col overflow-x-hidden overflow-y-auto" >
+                ref={salesForm} className="flex flex-col overflow-x-hidden overflow-y-auto" >
 
                 <label className="text-sm text-black font-bold mt-1">{t('Customer_Name')}</label>
                 <div className="flex flex-row items-center">
@@ -437,7 +438,11 @@ const SalesForm = () => {
                         </details>
 
                         {/* Create Receipt Button */}
-                        <VoucherView print={print} setPrint={setPrint} data={printData} />
+
+                        {settings.enableCustomVoucher && (settings?.paper == 'A4' || settings?.paper == 'A5') ?
+                        <CustomVoucher print={print} setPrint={setPrint} data={printData} />
+
+                        :   <VoucherView print={print} setPrint={setPrint} data={printData} />}
                         <button
                             type="submit"
                             onClick={onSubmit}
@@ -447,10 +452,10 @@ const SalesForm = () => {
                         </button>
                         <button
                             type="submit"
-                            onClick={(e)=>{
+                            onClick={(e) => {
                                 onSubmit(e)
                                 IsPrint = true;
-                            
+
                             }}
                             className="bg-primary text-white rounded-md p-2 mt-2 w-full cursor-pointer">
                             <i className="bi bi-printer text-md select-none cursor-pointer"></i>{' '}

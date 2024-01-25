@@ -10,6 +10,8 @@ import Loading from '../custom_components/Loading';
 import { useCartTemp } from './CartContextTempProvier';
 import ProductTableModal from './ProductTableModal';
 import VoucherView from '../custom_components/VoucherView';
+import CustomVoucher from '../custom_components/CustomVoucherView';
+import { useSetting } from '../../context/SettingContextProvider';
 
 
 const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRow, selectedRow }) => {
@@ -17,6 +19,8 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
 
     const salesForm = useRef(null);
     const inputRef = useRef(null);
+
+    const {settings} = useSetting();
 
 
     const [loading, setLoading] = useState(false);
@@ -401,7 +405,10 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
                 </div>
 
             </form >
-            <VoucherView data={selectedRow} print={print} setPrint={setPrint} />
+            {settings.enableCustomVoucher && (settings?.paper == 'A4' || settings?.paper == 'A5') ?
+                        <CustomVoucher print={print} setPrint={setPrint} data={selectedRow} />
+
+                        :   <VoucherView print={print} setPrint={setPrint} data={selectedRow} />}
             <ProductTableModal show={showpdtable} setShow={setShowpdtable} setSelectProduct={setSelectedProduct} selectedProduct={selectedProduct} />
         </div >
     )
