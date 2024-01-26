@@ -33,7 +33,7 @@ const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSe
 
     return (<div className={`w-full overflow-auto my-2 absolute h-full`}>
     <div className='w-full h-full'>
-        <table className='w-full h-full'>
+    <table className={`w-full ${data?.length > 10 ? 'h-full' : ''}`}>
                     <thead className='bg-primary sticky top-0 text-white'>
                         <tr>
 
