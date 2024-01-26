@@ -24,6 +24,7 @@ import { useAuth } from '../../context/AuthContextProvider'
 import { useSetting } from '../../context/SettingContextProvider'
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch'
 import { useCustomVoucher } from '../../context/CustomVoucherProvider'
+import { IMAGE as I } from '../../config/image'
 
 const exampleData = {
   voucherNumber: '123456',

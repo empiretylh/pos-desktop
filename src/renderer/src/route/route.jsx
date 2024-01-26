@@ -111,6 +111,11 @@ const Routes = () => {
 
   const routesForPublic = [
     {
+      path: "/dashboard",
+      element: <Dashboard />,
+      errorElement: <Navigate to="/dashboard" />
+    },
+    {
       path: "/login",
       element: <Login />,
       errorElement: <Navigate to="/" />

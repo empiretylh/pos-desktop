@@ -35,7 +35,7 @@ const Login = () => {
 
             user_data.refetch();
 
-            window.location.href = '/dashboard'
+            window.location.href = '/'
             ipcRenderer.invoke('restart-app');
         },
         onError:err=>{
