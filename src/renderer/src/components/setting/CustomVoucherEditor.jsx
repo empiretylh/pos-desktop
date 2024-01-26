@@ -364,7 +364,6 @@ const CustomVoucherEditor = ({ show, setShow, data = exampleData, customerid }) 
                                                     style={{
                                                         width: parseInt(values?.logosize),
                                                         height: parseInt(values?.logosize),
-                                                        alignSelf: 'center'
                                                     }}
                                                 />
                                             )}
@@ -427,7 +426,6 @@ const CustomVoucherEditor = ({ show, setShow, data = exampleData, customerid }) 
                                                         style={{
                                                             width: parseInt(values?.logosize),
                                                             height: parseInt(values?.logosize),
-                                                            alignSelf: 'center'
                                                         }}
                                                     />
                                                 )}

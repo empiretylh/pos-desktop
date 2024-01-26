@@ -25,10 +25,10 @@ const SettingDataProvider = ({ children }) => {
 
     //get settings data from localstorage
     useEffect(()=>{
-        const settings = localStorage.getItem('settings');
-        if(settings){
-            setSettings(JSON.parse(settings));
-            console.log("old settings", settings)
+        const values_old = localStorage.getItem('settings');
+        if(values_old !== 'null' || values_old !== null || values_old !== undefined  || values_old !== 'undefined' || values_old !== '' || values_old?.length >= 0){
+            setSettings(JSON.parse(values_old));
+            console.log("old settings", values_old)
         }else{
             localStorage.setItem('settings', JSON.stringify(settings));
         }

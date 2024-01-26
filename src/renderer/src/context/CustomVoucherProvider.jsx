@@ -72,7 +72,7 @@ const CustomVoucherDataProvider = ({ children }) => {
         const values_old = localStorage.getItem('customvouchervalue');
         console.log(values_old, "old values");
 
-        if (values_old !== 'null' || values_old !== null || values_old !== undefined  || values_old !== 'undefined' || values_old !== '' || values_old?.length <= 0) {
+        if (values_old !== 'null' || values_old !== null || values_old !== undefined  || values_old !== 'undefined' || values_old !== '' || values_old?.length >= 0) {
             try {
                 setValues(JSON.parse(values_old));
             } catch (error) {
