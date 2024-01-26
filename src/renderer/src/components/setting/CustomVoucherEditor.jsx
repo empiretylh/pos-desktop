@@ -180,7 +180,7 @@ const CustomVoucherEditor = ({ show, setShow, data = exampleData, customerid }) 
           </button>
         </div>
 
-        <div className="grid grid-cols-4 w-full h-full p-1 rounded-md relative">
+        <div className="grid grid-cols-4 w-full h-full p-1 rounded-md relative select-none">
           <div
             className="col-span-1 w-full  border rounded shadow-md flex flex-col overflow-auto"
             style={{
@@ -197,6 +197,21 @@ const CustomVoucherEditor = ({ show, setShow, data = exampleData, customerid }) 
                 <option value="left">Left</option>
                 <option value="center">Center</option>
               </select>
+            </div>
+            <div className="flex flex-row items-center justify-between p-3 bg-slate-50">
+              <label className="text-sm font-bold">Show Logo : </label>
+              <div>
+                <input
+                  id="showlogo"
+                  type="checkbox"
+                  className='mr-2'
+                  checked={values?.islogo}
+                  onChange={(e) => ChangeValue(e.target.checked, 'islogo')}
+                />
+                <label htmlFor="showlogo" className="cursor-pointer">
+                  Visible
+                </label>
+              </div>
             </div>
             <div className="flex flex-row items-center justify-between p-3 bg-slate-50 mt-1">
               <label className="text-sm font-bold">Logo Size : </label>

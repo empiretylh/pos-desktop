@@ -39,9 +39,9 @@ const CustomVoucherDataProvider = ({ children }) => {
     lineheight: 0.1,
     linemt: 0.5,
     bodypadding: '0px 20px 20px 20px',
-    padding: '10px 10px 10px 10px',
+    padding: '0px 0px 0px 0px',
     itemFontsize: 6,
-    headerpadding: '20px 20px 0px 20px',
+    headerpadding: '0px 0px 0px 0px',
 
     isnocol: true,
     isprodcutcol: true,
