@@ -59,6 +59,12 @@ function createWindow() {
 
   });
 
+  //restart app
+  ipcMain.handle('restart-app', async (event, arg) => {
+    app.relaunch();
+    app.exit();
+  });
+
   ipcMain.handle('save-profile-img', async (event, arg) => {
 
     const blobUrl = arg.imageurl;
