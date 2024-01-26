@@ -117,7 +117,7 @@ const CustomVoucherEditor = ({ show, setShow, data = exampleData, customerid }) 
     const focusref = useRef(null);
 
     const onEdit = (name, value, title) => {
-
+      
         setIsEdit(true)
         setEditName(name)
         setEditValue(value)
