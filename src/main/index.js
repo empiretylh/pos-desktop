@@ -128,21 +128,20 @@ function createWindow() {
     printWindow.loadURL(path.join(__dirname, '../../resources/print.html?image=' + filepath + '&width=' + arg.width_img + '&height=' + arg.height_img));
     printWindow.webContents.on('did-finish-load', () => {
       printWindow.webContents.print({
-        silent: true,
+        silent: arg.paper == 'A4' || arg.paper == 'A5' ? false : true,
         printBackground: true,
         deviceName: arg.options.printerName,
         margins: {
           marginType:'printableArea'
         },
-
         pageRanges: '1-1',
-        pageSize: arg.paper == '58' ||  arg.paper == '80' ? customPageSize : arg.paper,
+        pageSize: arg.paper == '58' || arg.paper == '80' ? customPageSize : arg.paper,
         
       });
 
       setTimeout(() => {
        printWindow.close();
-      }, 3000);
+      }, 50000);
     }
     );
 
