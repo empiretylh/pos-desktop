@@ -1,10 +1,10 @@
 {
-  "name": "pos-desktop",
+  "name": "Perfect Solution POS Desktop",
   "version": "1.0.0",
-  "description": "An Electron application with React",
+  "description": "POS Desktop Application",
   "main": "./out/main/index.js",
-  "author": "example.com",
-  "homepage": "https://www.electronjs.org",
+  "author": "Perfect Solution",
+  "homepage": "https://perfectsolution.github.io/pos-desktop",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",
