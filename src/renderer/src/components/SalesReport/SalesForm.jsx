@@ -234,6 +234,21 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
     useEffect(() => {
         scrollref.current.scrollTop = 0;
     }, [cart])
+    
+    // if user press alt enter or ctrl enter setprint to true
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if ((e.altKey || e.ctrlKey) && e.key === 'Enter') {
+                setPrint(true);
+            }
+        }
+        window.addEventListener('keydown', handleKeyDown);
+
+        return () => {
+            window.removeEventListener('keydown', handleKeyDown);
+        }
+    }
+        , [print]);
 
 
     return (

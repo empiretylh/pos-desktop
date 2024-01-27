@@ -106,7 +106,7 @@ const Routes = () => {
       element: <ProtectedRoute />, // Wrap the component in ProtectedRoute
       errorElement: <Navigate to="/" />,
       children: routes,
-    },
+    },  
   ];
 
   const routesForPublic = [

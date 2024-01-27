@@ -103,10 +103,10 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedRow, set
                             >      <td className='border px-2 py-1 text-center'>{index + 1}</td>
                                 <td className='border px-2 py-1'>{item.name}</td>
 
-                                <td className='border px-2 py-1 text-center'>{item.qty}</td>
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(item.price)}</td>
+                                <td className={`border px-2 py-1 text-center ${item.qty  <= 0  ?  'bg-red-500 text-white' : ''}`}>{item.qty}</td>
+                                <td className={`border px-2 py-1 text-right ${parseInt(item?.price) < parseInt(item?.cost) ? 'bg-red-500 text-white' : ''}`}>{numberWithCommas(item.price)}</td>
 
-                                <td className='border px-2 py-1 text-right'>{numberWithCommas(item.cost)}</td>
+                                <td className={`border px-2 py-1 text-right ${parseInt(item?.price) < parseInt(item?.cost) ? 'bg-red-500 text-white' : ''}`}>{numberWithCommas(item.cost)}</td>
                                 <td className='border px-2 py-1 text-center'>{item.expiry_date}</td>
 
                                 <td className='border px-2 py-1'>{IDToCategory(item.category)} </td>

@@ -46,7 +46,6 @@ const SalesTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSe
                             <th className='border px-2 py-2'>{t('Discount')}</th>
                             <th className='border px-2 py-2'>{t('Delivery_Charges')}</th>
                             <th className='border px-2 py-2'>{t('Grand_Total')}</th>
-
                             <th className='border px-2 py-2'>{t('Date')}</th>
                             <th className='border px-2 py-2'>{t('Description')}</th>
 

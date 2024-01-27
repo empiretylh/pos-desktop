@@ -27,7 +27,7 @@ const SalesForm = () => {
     const [customername, setCustomername] = useState('');
     const [customershow, setCustomerShow] = useState(false);
 
-    const { cart, plusQty, minusQty, editQty, priceEdit, total, setCart } = useCart();
+    const { sales, cart, plusQty, minusQty, editQty, priceEdit, total, setCart, SSI, removeSale } = useCart();
     const { data: customerdata, customer_data } = useCustomerData();
     const { product_data } = useProductsData();
     const { showInfo, showNoti } = useAlertShow();
@@ -116,7 +116,7 @@ const SalesForm = () => {
                 IsPrint = false;
             }
             setLoading(false);
-            setCart([])
+            removeSale(SSI);
             setCustomername('')
             setTax(0)
             setDescription('')
@@ -314,7 +314,7 @@ const SalesForm = () => {
 
                                                         onChange={e => {
 
-                                                            priceEdit(item, e.target.value)
+                                                            priceEdit(item, e.target.value, SSI)
                                                         }}
                                                         onFocus={e => e.target.select()}
 
@@ -336,7 +336,7 @@ const SalesForm = () => {
                                         <button
                                             tabIndex={-1}
                                             type="button"
-                                            onClick={() => minusQty(item)}
+                                            onClick={() => minusQty(item, SSI)}
                                             className="bg-red-500 text-white rounded-md p-2 ml-2 mr-2">
                                             <i className="bi bi-dash-lg text-xl"></i>
                                         </button>
@@ -346,7 +346,7 @@ const SalesForm = () => {
                                             value={item.qty}
                                             className="border border-gray-300 rounded-md w-16 p-2  my-1 text-center"
                                             onChange={e => {
-                                                editQty(item, e.target.value)
+                                                editQty(item, e.target.value, SSI)
                                             }}
                                             onFocus={e => e.target.select()}
                                         />
@@ -354,7 +354,7 @@ const SalesForm = () => {
                                         <button
                                             type="button"
                                             tabIndex={-1}
-                                            onClick={() => plusQty(item)}
+                                            onClick={() => plusQty(item, SSI)}
                                             className="bg-primary text-white rounded-md p-2 ml-2">
                                             <i className="bi bi-plus-lg text-xl"></i>
                                         </button>

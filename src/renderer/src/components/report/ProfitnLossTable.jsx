@@ -43,7 +43,7 @@ const ProfitnLossTable = ({ data, searchtext = '', sortby = 'name', selectedRow,
 
                             <td className='border px-2 py-1 text-right'>{numberWithCommas(item.minus)}</td>
 
-                            <td className='border px-2 py-1 text-center'>{numberWithCommas(parseInt(item.plus) - parseInt(item.minus))}</td>
+                            <td className={`border px-2 py-1 text-center ${(parseInt(item.plus) - parseInt(item.minus)) > 0 ?'bg-green-500 text-white' : 'bg-red-500 text-white' }`}>{numberWithCommas(parseInt(item.plus) - parseInt(item.minus))}</td>
 
                         </tr>
                     )) :

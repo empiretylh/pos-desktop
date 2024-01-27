@@ -18,7 +18,7 @@ const generateRandomData = (numItems) => {
 const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedProduct, setSelectProduct, selectedCategory = "All" }) => {
     const { t } = useTranslation();
 
-    const { addToCart, removeFromCart, clearCart, cart } = useCart();
+    const { addToCart, removeFromCart, clearCart, cart , SSI} = useCart();
 
 
     const [selectedRow, setSelectedRow] = useState(0);
@@ -109,7 +109,7 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedProduct,
                 break;
             case 'Enter':
                 // Replace this with your code to handle row selection
-                addToCart(filterData[selectedRow])
+                addToCart(filterData[selectedRow], SSI)
                 break;
             default:
                 break;
@@ -141,7 +141,7 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedProduct,
                         {data ? filterData.map((item, index) => (
                             <tr
                                 onKeyDown={(event) => handleKeyDown(event, index)}
-                                onDoubleClick={(event) => addToCart(item)}
+                                onDoubleClick={(event) => addToCart(item, SSI)}
                                 onMouseOver={() => setSelectedRow(index)}
                                 key={index}
                                 tabIndex={0}
@@ -153,7 +153,7 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedProduct,
                                 <td className='border px-2 py-1 text-right'>{numberWithCommas(item.price)}</td>
 
                                 <td className='border px-2 py-1 text-center'>
-                                    <button onClick={() => addToCart(item)} className=' w-full px-2 py-1 bg-primary text-white rounded-md hover:bg-primary-200 active:bg-primary-300 active:text-white focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-opacity-50'>
+                                    <button onClick={() => addToCart(item, SSI)} className=' w-full px-2 py-1 bg-primary text-white rounded-md hover:bg-primary-200 active:bg-primary-300 active:text-white focus:outline-none focus:ring-2 focus:ring-primary-600 focus:ring-opacity-50'>
                                         {t('Add')}
                                     </button>
                                 </td>

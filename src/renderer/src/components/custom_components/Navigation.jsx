@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IMAGE } from "../../config/image";
 import { APPNAME } from "../../config/config";
 
@@ -61,8 +61,45 @@ const nav = [
 const Navigation = () => {
     const [open, setOpen] = React.useState(false);
     var location = useLocation();
+    let navigate = useNavigate();
 
     const [nav_select, set_nav_select] = React.useState(location.pathname);
+
+
+    // change location if user press ctrl + tab
+    React.useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.ctrlKey && e.key === "Tab") {
+                nav.map((item, index) => {
+                    if (item.link === location.pathname) {
+                        if (index + 1 < nav.length) {
+                            navigate(nav[index + 1].link);
+                        } else {
+                            navigate(nav[0].link);
+                        }
+                    }
+                });
+            }
+
+            if (e.ctrlKey && e.key === "Shift" && e.key === "Tab") {
+                nav.map((item, index) => {
+                    if (item.link === location.pathname) {
+                        if (index - 1 >= 0) {   
+                            navigate(nav[index - 1].link);
+                        } else {
+                            navigate(nav[nav.length - 1].link);
+                        }
+                    }
+                });
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [location.pathname]);
 
     return (
         <div

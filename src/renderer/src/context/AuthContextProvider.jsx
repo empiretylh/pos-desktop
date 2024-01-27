@@ -2,6 +2,8 @@ import axios from 'axios'
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import { useQuery } from 'react-query'
 import { getUser } from '../server/api'
+import { APPNAME } from '../config/config'
+import { IMAGE } from '../config/image'
 
 const { ipcRenderer } = window.electron
 
@@ -88,12 +90,23 @@ const AuthProvider = ({ children }) => {
 
   if (user_data.isFetching) {
     return (
-      <div className="flex items-center justify-center h-screen">
-        <div className="flex items-center justify-center space-x-2 text-2xl font-semibold text-gray-800">
-          <span className="font-mono">Syncing</span>
-          <div className="w-3 h-3 bg-gray-800 rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-gray-800 rounded-full animate-bounce"></div>
-          <div className="w-3 h-3 bg-gray-800 rounded-full animate-bounce"></div>
+      <div className="flex items-center justify-center h-screen bg-primary text-white">
+        <div className="flex items-center flex-col justify-cente text-2xl font-semibold  ">
+          <img
+            src={IMAGE.app_icon}
+            style={{
+              width: 100,
+              height: 100
+            }}
+          />
+          <span className="font-mono">{APPNAME}</span>
+          <div className='flex items-center flex-row space-x-2 mt-3'>
+            <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
+            <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
+
+          </div>
         </div>
       </div>
     )

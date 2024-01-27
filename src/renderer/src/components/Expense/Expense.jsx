@@ -31,6 +31,7 @@ const Expense = () => {
     const [selectedRow, setSelectedRow] = useState(null);
 
     const inputRef = useRef();
+    const searchRef = useRef();
     const expenseform = useRef();
 
     const PostExpense = useMutation(postExpense, {
@@ -185,6 +186,15 @@ const Expense = () => {
             if (e.altKey && e.key === 'Delete') {
                 clearExpenseForm();
             }
+
+            if(e.altKey && e.key === 'c'){
+                inputRef.current.focus();
+
+            }
+            if(e.altKey && e.key === 'f'){
+                searchRef.current.focus();
+            }
+
         }
         window.addEventListener('keydown', handleKeyDown);
         return () => {
@@ -294,7 +304,7 @@ const Expense = () => {
                         <div className='flex flex-row items-center'>
                             <div className="flex flex-row items-center mt-3 w-full">
                                 <icon className="bi bi-search text-2xl text-gray-400 mr-2"></icon>
-                                <input type="text" className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Expense')} onChange={(e) => setSearchtext(e.target.value)} />
+                                <input type="text" ref={searchRef} className="border border-gray-300 rounded-md w-full p-2 mr-3" placeholder={t('Search Expense')} onChange={(e) => setSearchtext(e.target.value)} />
                             </div>
                             {/* month, year, today toggle */}
                             <div className="flex flex-row items-center whitespace-nowarp w-[450px]">
