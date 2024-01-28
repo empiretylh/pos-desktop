@@ -13,6 +13,7 @@ import AddCustomer from './CustomerAddModal';
 import SetPaymentModal from './SetPaymentModal';
 import CustomerEditModal from './CustomerEditModal';
 import SelectedSalesModal from './SelectSalesModal.';
+import { useUserType } from '../../context/UserTypeProvider';
 const { ipcRenderer } = window.electron
 
 
@@ -138,6 +139,8 @@ const Customer = () => {
 
     const [showSelectedSales, setShowSelectedSales] = useState(false);
 
+    const {isAdmin} = useUserType();
+
     // press f5 to refersh data from server
 
     const searchref = useRef();
@@ -251,7 +254,7 @@ const Customer = () => {
                                             Edit
                                         </label>
                                     </button>
-                                    <button className='bg-red-500 hover:bg-red-600 text-white rounded-md p-2 whitespace-nowrap'
+                                   {isAdmin &&  <button className='bg-red-500 hover:bg-red-600 text-white rounded-md p-2 whitespace-nowrap'
                                         onClick={() => {
                                             showConfirm("Delete Customer", "Are you sure to delete this customer?", () => {
                                                 DeleteCustomer.mutate({ id: selectedSales?.id });
@@ -263,7 +266,7 @@ const Customer = () => {
                                         <label className="whitespace-nowrap">
                                             Delete Customer
                                         </label>
-                                    </button>
+                                    </button>}
                                 </div>
 
                             </div>

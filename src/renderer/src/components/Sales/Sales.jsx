@@ -74,7 +74,16 @@ const Sales = () => {
       if (e.key === 'F5') {
         product_data.refetch()
         category_data.refetch()
+      } 
+
+      if(e.ctrlKey && e.key === 'n'){
+        newSales()
       }
+
+      if(e.ctrlKey && e.key >= '1' && e.key <= '9'){
+        setSSI(parseInt(e.key) - 1);
+      }
+
     }
 
     window.addEventListener('keydown', handleKeyDown)

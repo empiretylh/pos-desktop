@@ -14,6 +14,7 @@ import SetPaymentModal from './SetPaymentModal';
 import SupplierEditModal from './SupplierEditModal';
 import SelectProductsModal from './SelectProudctsModal';
 import { ProductsByID, useSupplierData } from '../../context/SupplierProvider';
+import { useUserType } from '../../context/UserTypeProvider';
 const { ipcRenderer } = window.electron
 
 
@@ -23,6 +24,8 @@ const Supplier = () => {
     const { showConfirm, showInfo, showNoti } = useAlertShow();
 
     const [loading, setLoading] = useState(false);
+
+    const {isAdmin} = useUserType();
 
 
     const [searchtext, setSearchtext] = useState('');
@@ -233,7 +236,7 @@ const Supplier = () => {
                                             Edit
                                         </label>
                                     </button>
-                                    <button className='bg-red-500 hover:bg-red-600 text-white rounded-md p-2 whitespace-nowrap'
+                                {isAdmin &&    <button className='bg-red-500 hover:bg-red-600 text-white rounded-md p-2 whitespace-nowrap'
                                         onClick={() => {
                                             showConfirm("Delete Supplier", "Are you sure to delete this supplier?", () => {
                                                 DeleteSupplier.mutate({ id: selectedSupplier?.id });
@@ -245,7 +248,7 @@ const Supplier = () => {
                                         <label className="whitespace-nowrap">
                                             Delete Supplier
                                         </label>
-                                    </button>
+                                    </button>}
                                 </div>
 
                             </div>

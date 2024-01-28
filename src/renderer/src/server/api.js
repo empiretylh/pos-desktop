@@ -237,3 +237,22 @@ export const profileimageupload = (data) =>{
         },
     });
 }
+
+
+export const getPricing = (data) =>{
+    getTokenLocalStorage();
+    return axios.get('/api/pricing/', data);
+}
+
+
+
+export const postPricingRequest = (data) =>{
+    getTokenLocalStorage();
+    return axios.post('/api/pricing/', data);
+}
+
+
+export const deletePricingRequest = (data) =>{
+    getTokenLocalStorage();
+    return axios.delete('/api/pricing/?type='+data.id);
+}

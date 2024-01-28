@@ -8,6 +8,7 @@ import { useAlertShow } from '../custom_components/AlertProvider';
 import Loading from '../custom_components/Loading';
 import Navigation from '../custom_components/Navigation';
 import numberWithCommas from '../custom_components/NumberWithCommas';
+import { useUserType } from '../../context/UserTypeProvider';
 const { ipcRenderer } = window.electron
 
 
@@ -17,6 +18,8 @@ const OtherIncome = () => {
     const { showConfirm, showInfo, showNoti } = useAlertShow();
 
     const [loading, setLoading] = useState(false);
+
+    const {isAdmin} = useUserType();
 
 
     const [searchtext, setSearchtext] = useState('');
@@ -103,7 +106,7 @@ const OtherIncome = () => {
                 title: selectedRow?.title,
                 price: selectedRow?.price,
                 date: selectedRow?.date,
-                description: selectedRow?.description,
+                description: isAdmin ? selectedRow?.description : '#cashier \n' + selectedRow?.description,
             })
         }
 
@@ -116,7 +119,7 @@ const OtherIncome = () => {
                 title: form.title.value,
                 price: form.price.value,
                 date: form.date.value,
-                description: form.description.value,
+                description: isAdmin ? form.description.value : '#cashier \n' + form.description.value,
             }
         );
 

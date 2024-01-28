@@ -6,6 +6,7 @@ import { useMutation } from 'react-query'
 import { useCustomerData } from '../../context/CustomerProvider'
 import { useAlertShow } from '../custom_components/AlertProvider'
 import { useCartTemp } from './CartContextTempProvier'
+import { useUserType } from '../../context/UserTypeProvider'
 
 const SalesTable = ({
   data,
@@ -18,6 +19,8 @@ const SalesTable = ({
   customerid
 }) => {
   const { t } = useTranslation()
+
+  const { isAdmin } = useUserType()
 
   const filterData = useMemo(() => {
     if (data) {
@@ -48,9 +51,7 @@ const SalesTable = ({
               <th className="border px-2 py-2">{t('Discount')}</th>
               <th className="border px-2 py-2">{t('Delivery_Charges')}</th>
               <th className="border px-2 py-2">{t('Grand_Total')}</th>
-              <th className="border px-2 py-2">{t('Profit')}</th>
-
-
+              {isAdmin && <th className="border px-2 py-2">{t('Profit')}</th>}
 
               <th className="border px-2 py-2">{t('Date')}</th>
               <th className="border px-2 py-2">{t('Description')}</th>
@@ -86,10 +87,11 @@ const SalesTable = ({
                   <td className="border px-2 py-1 text-right">
                     {numberWithCommas(parseInt(item.totalAmount))}
                   </td>
-                  <td className="border px-2 py-1 text-right">
-                  {numberWithCommas(parseInt(item.totalProfit))}
-                  </td>
-
+                  {isAdmin && (
+                    <td className="border px-2 py-1 text-right">
+                      {numberWithCommas(parseInt(item.totalProfit))}
+                    </td>
+                  )}
                   <td className="border px-2 py-1 text-right">
                     {new Date(item.date).toLocaleDateString()}
                   </td>

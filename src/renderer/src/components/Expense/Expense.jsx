@@ -8,6 +8,7 @@ import Loading from '../custom_components/Loading';
 import Navigation from '../custom_components/Navigation';
 import numberWithCommas from '../custom_components/NumberWithCommas';
 import ExpenseTable from './ExpenseTable';
+import { useUserType } from '../../context/UserTypeProvider';
 const { ipcRenderer } = window.electron
 
 const Expense = () => {
@@ -18,6 +19,8 @@ const Expense = () => {
     const [loading, setLoading] = useState(false);
 
     const [selected, setSelected] = useState('Products');
+
+    const {isAdmin} = useUserType();
 
     const [searchtext, setSearchtext] = useState('');
     const [sortby, setSortBy] = useState('none');
@@ -103,7 +106,7 @@ const Expense = () => {
                 title: selectedRow?.title,
                 price: selectedRow?.price,
                 date: selectedRow?.date,
-                description: selectedRow?.description,
+                description: isAdmin ? selectedRow?.description : '#cashier \n' + selectedRow?.description,
             })
         }
 
@@ -116,7 +119,7 @@ const Expense = () => {
                 title: form.title.value,
                 price: form.price.value,
                 date: form.date.value,
-                description: form.description.value,
+                description: isAdmin ? form.description.value : '#cashier \n' + form.description.value,
             }
         );
 

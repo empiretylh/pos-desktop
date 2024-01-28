@@ -12,10 +12,13 @@ import Loading from '../custom_components/Loading'
 import Navigation from '../custom_components/Navigation'
 import EditProfileModal from './EditProfileModal'
 import VoucherProperties from './VoucherProperties'
+import { useUserType } from '../../context/UserTypeProvider'
 const { ipcRenderer } = window.electron
 
 const Setting = () => {
   const [loading, setLoading] = useState(false)
+
+  const {isAdmin} = useUserType();
 
   const { user_data, profiledata, LOGOUT } = useAuth()
 
@@ -94,7 +97,7 @@ const Setting = () => {
                     e.target.src = IMAGE.app_icon
                   }}
                 />
-                <button
+             {isAdmin &&   <button
                   className="bg-slate-200 hover:bg-slate-300 p-2 rounded-full absolute"
                   style={{
                     bottom: -10,
@@ -105,7 +108,7 @@ const Setting = () => {
                   }}
                 >
                   <i className="bi bi-camera text-black" />
-                </button>
+                </button>}
                 <input
                   type="file"
                   className="hidden"
@@ -128,14 +131,14 @@ const Setting = () => {
                 <h1 className="text-md text-gray-800">{profiledata?.phoneno}</h1>
                 <h1 className="text-md text-gray-800">{profiledata?.address}</h1>
               </div>
-              <div className="ml-auto">
+             {isAdmin && <div className="ml-auto">
                 <button
                   className="bg-primary hover:bg-blue-900 p-2 rounded-md"
                   onClick={() => setEditShow(true)}
                 >
                   <i className="bi bi-pencil text-white" />
                 </button>
-              </div>
+              </div>}
             </div>
           </div>
           <div className="flex flex-row items-center mt-10">

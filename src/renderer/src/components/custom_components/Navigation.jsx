@@ -2,11 +2,12 @@ import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { IMAGE } from "../../config/image";
 import { APPNAME } from "../../config/config";
+import { useUserType } from "../../context/UserTypeProvider";
 
 //Create array contain name, img, link
 //Dashboard, Course, Lesson, Request, User,
 
-const nav = [
+const adminnav = [
     {
         name: "Dashboard",
         icon: "bi bi-house",
@@ -65,6 +66,14 @@ const Navigation = () => {
 
     const [nav_select, set_nav_select] = React.useState(location.pathname);
 
+    const {isAdmin} = useUserType();
+
+    let nav = adminnav;
+    if(!isAdmin){
+        nav = [adminnav[2]].concat(adminnav.filter((item)=>item.name !== 'Dashboard' &&  item.name !== 'Report'  &&  item.name !== 'Sales'));
+    };
+
+
 
     // change location if user press ctrl + tab
     React.useEffect(() => {
@@ -103,7 +112,7 @@ const Navigation = () => {
 
     return (
         <div
-            className={`h-screen bg-white font-mono text-black ${"w-20"} duration-300 relative border-r-2`}
+            className={`h-screen flex flex-col bg-white font-mono text-black ${"w-20"} duration-300 relative border-r-2`}
         >
             <div className="flex flex-row items-center px-2 ">
                 {/* <img

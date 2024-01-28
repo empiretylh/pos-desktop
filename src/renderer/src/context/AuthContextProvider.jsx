@@ -4,6 +4,7 @@ import { useQuery } from 'react-query'
 import { getUser } from '../server/api'
 import { APPNAME } from '../config/config'
 import { IMAGE } from '../config/image'
+import PricingView from '../components/Pricing/PricingView'
 
 const { ipcRenderer } = window.electron
 
@@ -12,6 +13,9 @@ const AuthContext = createContext()
 const AuthProvider = ({ children }) => {
   // State to hold the authentication token
   const [token, setToken_] = useState(localStorage.getItem('token'))
+  const [isplan, setisplan] = useState(true)
+  const [show, setShow] = useState(false)
+
 
   const setToken = (newToken) => {
     localStorage.setItem('token', newToken)
@@ -67,10 +71,33 @@ const AuthProvider = ({ children }) => {
     }
   }, [user_data.data])
 
+  useEffect(() => {
+    if (user_data.data?.data) {
+      let startdate = new Date(user_data.data?.data?.start_d)
+      let enddate = new Date(user_data.data?.data?.end_d)
+      let today = new Date()
+      if (today < startdate || today > enddate) {
+        console.log('Plan has been activated')
+
+        setisplan(false)
+      } else {
+        console.log('Plan has been activated')
+        setisplan(true)
+      }
+    }
+  }, [user_data.data])
+
+  useEffect(() => { 
+    if(!isplan){
+      setShow(true)
+    }
+  }, [isplan])
+
   const profiledata = useMemo(() => {
     return user_data.data?.data
   }, [user_data.data])
 
+ 
   useEffect(() => {
     if (profiledata?.profileimage) {
       saveProfileImage(axios.defaults.baseURL + profiledata?.profileimage)
@@ -83,9 +110,10 @@ const AuthProvider = ({ children }) => {
       setToken,
       LOGOUT,
       user_data,
-      profiledata
+      profiledata,
+      isplan
     }),
-    [token, profiledata, user_data]
+    [token, profiledata, user_data, isplan]
   )
 
   if (user_data.isFetching) {
@@ -100,19 +128,26 @@ const AuthProvider = ({ children }) => {
             }}
           />
           <span className="font-mono">{APPNAME}</span>
-          <div className='flex items-center flex-row space-x-2 mt-3'>
+          <div className="flex items-center flex-row space-x-2 mt-3">
             <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
             <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
             <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
             <div className="w-3 h-3 bg-white rounded-full animate-bounce"></div>
-
           </div>
         </div>
       </div>
     )
   }
+
+
+ 
   // Provide the authentication context to the children components
-  return <AuthContext.Provider value={contextValue}>{children}</AuthContext.Provider>
+  return (
+    <AuthContext.Provider value={contextValue}>
+      {!isplan && <PricingView show={show} setShow={setShow}/>}
+      {children}
+    </AuthContext.Provider>
+  )
 }
 
 export const useAuth = () => {
