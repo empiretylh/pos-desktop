@@ -14,12 +14,14 @@ const UserTypeContextProvider = ({ children }) => {
 
     useEffect(() => {
         let userType = localStorage.getItem('usertype');
-        if(usertype == 'Admin'){
+        console.log(userType, "User type")
+        if(userType == 'null' || userType == null || userType == 'Admin'){
             setIsAdmin(true);
+            localStorage.setItem('usertype', 'Admin', isAdmin);
         }else{
             setIsAdmin(false);
         }
-    }, [usertype]);
+    }, []);
 
     const ChangeUserType = (newUserType) => {
         localStorage.setItem('usertype', newUserType)
@@ -33,7 +35,7 @@ const UserTypeContextProvider = ({ children }) => {
             isAdmin,
             ChangeUserType,
         }),
-        [usertype]
+        [usertype, isAdmin, ChangeUserType]
     );
 
 
