@@ -12,6 +12,7 @@ import ProductTableModal from './ProductTableModal';
 import VoucherView from '../custom_components/VoucherView';
 import CustomVoucher from '../custom_components/CustomVoucherView';
 import { useSetting } from '../../context/SettingContextProvider';
+import { useUserType } from '../../context/UserTypeProvider';
 
 
 const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRow, selectedRow }) => {
@@ -35,6 +36,8 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
     const { data: customerdata, customer_data } = useCustomerData();
     const { product_data } = useProductsData();
     const { showInfo, showNoti, showConfirm } = useAlertShow();
+
+    const {isAdmin} = useUserType();
 
 
     const [isEditing, setIsEditing] = useState(false);
@@ -393,7 +396,7 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
                             <label className="text-md font-mono select-none cursor-pointer">Update Receipt</label>
                         </button>
 
-                        <button
+                     {isAdmin &&   <button
                             type="button"
                             onClick={() => {
                                 showConfirm('Delete Receipt','Are you sure to delete this receipt?', () => {
@@ -405,7 +408,7 @@ const SalesForm = ({ defaultname = 'Unknown', salesid, sales_data, setSelectedRo
                             className="bg-red-500 text-white rounded-md p-2 mt-2 w-full">
                             <i className="bi bi-trash text-md select-none cursor-pointer"></i>{' '}
                             <label className="text-md font-mono select-none cursor-pointer">Delete Receipt</label>
-                        </button>
+                        </button>}
                         <button
                             type="button"
                             onClick={() => {

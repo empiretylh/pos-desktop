@@ -5,6 +5,7 @@ import { deleteCustomer, deleteVoucherfromCustomer } from '../../server/api';
 import { useMutation } from 'react-query';
 import { useCustomerData } from '../../context/CustomerProvider';
 import { useAlertShow } from '../custom_components/AlertProvider';
+import { useUserType } from '../../context/UserTypeProvider';
 
 const generateRandomData = (numItems) => {
     const data = [];
@@ -19,6 +20,8 @@ const generateRandomData = (numItems) => {
 
 const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selectedRow, setSelectedRow, rowDoubleClick, setShowPayment, customerid}) => {
     const { t } = useTranslation();
+
+    const {isAdmin} = useUserType();
 
 
     const filterData = useMemo(() => {
@@ -82,7 +85,7 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                             <tr
                                 onDoubleClick={() => rowDoubleClick(item)}
                                 key={index}
-                                className={`cursor-pointer hover:bg-slate-100 select-none`}
+                                className={`cursor-pointer select-none ${parseInt(item.grandtotal) - parseInt(item.customer_payment) == 0 ? 'bg-green-500 hover:bg-green-800' : 'hover:bg-slate-100'}`}
                             >      <td className='border px-2 py-1 text-center'>{index + 1}</td>
                                 <td className='border px-2 py-1'>{item.voucherNumber}</td>
                                 <td className='border px-2 py-1'>{item.customerName}</td>
@@ -94,7 +97,7 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                                 <td className='border px-2 py-1 text-right'>{numberWithCommas(parseInt(item.grandtotal) - parseInt(item.customer_payment))}</td>
                                 <td className='border px-2 py-1 text-right'>{new Date(item.date).toLocaleDateString()}</td>
                                 <td claassName='border px-2 py-1 text-center'>
-                                    {parseInt(item.grandtotal) - parseInt(item.customer_payment) == 0 ?
+                                    {parseInt(item.grandtotal) - parseInt(item.customer_payment) == 0 && isAdmin ?
                                         <button
                                             onClick={() => { 
                                                 removeVoucher.mutate({ customerid : customerid , sales : item.receiptNumber})
@@ -102,7 +105,7 @@ const CustomerVoucherTable = ({ data, searchtext = '', sortby = 'name', selected
                                             className='px-2 py-1 bg-red-500 text-white rounded hover:bg-red-700 text-center w-full'
 
                                         >Remove</button>
-                                        : <button
+                                            : <button
                                             onClick={() => { setSelectedRow(item); setShowPayment(true) }}
                                             className='px-2 py-1 bg-blue-500 text-white rounded hover:bg-blue-700 text-center w-full'
 

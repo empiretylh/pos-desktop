@@ -19,7 +19,7 @@ const generateRandomData = (numItems) => {
 const ProductCard = ({ data, searchtext = '', sortby = 'name', selectedProduct, setSelectProduct, selectedCategory = "All" }) => {
     const { t } = useTranslation();
 
-    const { addToCart, removeFromCart, clearCart, cart } = useCart();
+    const { addToCart, removeFromCart, clearCart, cart, SSI } = useCart();
 
 
     const [selectedRow, setSelectedRow] = useState(0);
@@ -110,7 +110,7 @@ const ProductCard = ({ data, searchtext = '', sortby = 'name', selectedProduct, 
                 break;
             case 'Enter':
                 // Replace this with your code to handle row selection
-                addToCart(filterData[selectedRow])
+                addToCart(filterData[selectedRow], SSI)
                 break;
             default:
                 break;
@@ -130,7 +130,7 @@ const ProductCard = ({ data, searchtext = '', sortby = 'name', selectedProduct, 
                 {/* CardView with Image  */}
                 {data ? filterData.map((item, index) => (
 
-                    <div key={item.id} className={`w-full h-[220px] rounded-lg shadow-lg flex flex-col justify-between items-center hover:bg-blue-500 hover:text-white  text-black cursor-pointer`} tabIndex={0} onKeyDown={(e) => handleKeyDown(e, index)} onClick={() => addToCart(item)}>
+                    <div key={item.id} className={`w-full h-[220px] rounded-lg shadow-lg flex flex-col justify-between items-center select-none hover:bg-blue-500 hover:text-white  text-black cursor-pointer`} tabIndex={0} onKeyDown={(e) => handleKeyDown(e, index)} onClick={() => addToCart(item, SSI)}>
                         <div className='w-full h-full flex flex-col'>
                             <div className='w-full h-full flex'>
                                 <img src={item?.pic ? axios.defaults.baseURL + item.pic : "https://www.pngitem.com/pimgs/m/27-272007_transparent-product-icon-png-product-vector-icon-png.png"}
@@ -149,7 +149,7 @@ const ProductCard = ({ data, searchtext = '', sortby = 'name', selectedProduct, 
                         </div>
                     </div>
                 )) : defaultdata.map((item, index) => (
-                    <div key={item.id} className={`w-full h-48 rounded-lg shadow-lg flex flex-col justify-between items-center p-2 ${selectedRow === index ? 'bg-blue-500 text-white' : 'bg-white text-black'} `} tabIndex={0} onKeyDown={(e) => handleKeyDown(e, index)} onClick={() => addToCart(item)}>
+                    <div key={item.id} className={`w-full h-48 rounded-lg shadow-lg flex flex-col justify-between items-center p-2 ${selectedRow === index ? 'bg-blue-500 text-white' : 'bg-white text-black'} `} tabIndex={0} onKeyDown={(e) => handleKeyDown(e, index)} onClick={() => addToCart(item, SSI)}>
                         <div className='w-full h-full flex flex-col justify-between items-center'>
                             <div className='w-full h-2/3 flex justify-center items-center'>
                                 <img src={item.image} alt="" className='w-full h-full object-contain' />

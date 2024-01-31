@@ -206,7 +206,7 @@ const Setting = () => {
               </div>
             </div>
             {/* less than qty value */}
-            <div className="flex flex-row justify-between items-center mt-2">
+           {isAdmin && <div className="flex flex-row justify-between items-center mt-2">
               <div className="flex flex-row items-center">
                 <h1 className="text-xl font-bold">{t('<')}</h1>
                 <h1 className="text-md ml-4">{t('Less Than')}</h1>
@@ -222,10 +222,10 @@ const Setting = () => {
                 />
                 Qty
               </div>
-            </div>
+            </div>}
 
             {/* Expire in day */}
-            <div className="flex flex-row justify-between items-center mt-2">
+            {isAdmin && <div className="flex flex-row justify-between items-center mt-2">
               <div className="flex flex-row items-center">
                 <i className="bi bi-calendar text-xl" />
                 <h1 className="text-md ml-4">{t('Expire Show Products in')}</h1>
@@ -241,7 +241,7 @@ const Setting = () => {
                 />
                 days
               </div>
-            </div>
+            </div>}
 
             <div className="flex flex-row justify-between items-center mt-2">
               <div className="flex flex-row items-center">
