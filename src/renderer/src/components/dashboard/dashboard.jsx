@@ -20,8 +20,9 @@ import { useCustomerData } from '../../context/CustomerProvider';
 import { useSupplierData } from '../../context/SupplierProvider';
 import LessThanQtyModal from './LessThanQtyModal';
 import ExpireInModal from './ExpireInQtyModal';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useSetting } from '../../context/SettingContextProvider';
+import { useUserType } from '../../context/UserTypeProvider';
 
 const Dashboard = () => {
 
@@ -30,6 +31,8 @@ const Dashboard = () => {
     const [loading, setLoading] = useState(false);
 
     const { setToken } = useAuth();
+    const {isAdmin} = useUserType();
+    const navigate = useNavigate();
 
     const { t } = useTranslation();
 
@@ -50,6 +53,13 @@ const Dashboard = () => {
 
     const [lessthanshow, setLessThanShow] = useState(false);
     const [expireshow, setExpireShow] = useState(false);
+
+    // if usertype is not admin go to sales
+    useEffect(() => {
+        if(!isAdmin){
+            navigate('/sales')
+        }
+    }, [isAdmin])
 
     const TopProductPie = useMemo(() => {
         let data = [];

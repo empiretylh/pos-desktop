@@ -22,6 +22,7 @@ import ExcelImportExport from './ExcelImportExport'
 import ProductTable from './ProductTable'
 import ProductsByCategoryView from './ProductsByCategoryView'
 import { useUserType } from '../../context/UserTypeProvider'
+import { isImageServer } from '../../config/config'
 const { ipcRenderer } = window.electron
 
 const Products = () => {
@@ -151,7 +152,7 @@ const Products = () => {
     //if selectedRow is not null putproduct else postproduct
     if (selectedRow?.id) {
       //selectedRow remove pic
-      delete selectedRow.pic
+      if(!isImageServer) delete selectedRow.pic
 
       return PutProduct.mutate(selectedRow)
     }
@@ -168,7 +169,7 @@ const Products = () => {
       supplier_name: form.supplier.value,
       expiry_date: form.expire.value,
       description: form.description.value,
-      pic: null
+      pic: form.pic.files[0],
     }
 
     if(!isAdmin){
@@ -185,6 +186,8 @@ const Products = () => {
     }
 
     PostProduct.mutate(data)
+
+    clearProductForm();
 
     form.reset()
   }
@@ -520,6 +523,23 @@ const Products = () => {
                   placeholder={t('Description')}
                   id="description"
                 />
+
+                {isImageServer ?
+                <>
+                <label className="text-sm text-black font-bold mt-1">{t('Image')}</label>
+                <input
+                  type="file"
+                  onChange={(e) => {
+                    handleChange(e.target.files[0], e.target.id)
+                  }
+                  }
+                  className="border border-gray-300 rounded-md w-full p-2  my-1"
+                  placeholder={t('Image')}
+                  id="pic"
+                />
+                </>
+                
+              :null}
 
                 <button
                   type="submit"

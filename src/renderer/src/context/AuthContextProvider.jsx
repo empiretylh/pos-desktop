@@ -22,7 +22,11 @@ const AuthProvider = ({ children }) => {
     setToken_(newToken)
   }
 
-  const LOGOUT = () => {
+  const LOGOUT = async() => {
+    const result = await ipcRenderer.invoke('device-info')
+    axios.get('auth/logout/',{
+      duid: localStorage.uniqueId,
+    })
     setToken(null)
     localStorage.removeItem('token')
     axios.defaults.headers.common = { Authorization: null }
