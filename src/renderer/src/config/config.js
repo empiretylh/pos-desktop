@@ -1,9 +1,9 @@
 // export const domainURL = 'http://localhost:8000'
-export const isImageServer = true;
+export const isImageServer = false;
 
-export const domainURL = isImageServer ? 'https://mttonlinepos.pythonanywhere.com' :'https://empirepos.pythonanywhere.com'
+export const domainURL = isImageServer ? 'https://rapidretail.pythonanywhere.com' :'https://rapidretail.pythonanywhere.com'
 // export const domainURL = 'https://mttonlinepos.pythonanywhere.com';
 
 
-export const APPNAME = "Perfect Solution";
+export const APPNAME = "Rapid Retail POS";
 
