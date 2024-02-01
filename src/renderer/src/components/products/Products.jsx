@@ -75,6 +75,7 @@ const Products = () => {
       setLoading(false)
       showNoti('Category Added Successfully')
       category_data.refetch()
+      clearCategoryForm();
     },
     onError: () => {
       setLoading(false)

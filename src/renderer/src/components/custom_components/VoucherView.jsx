@@ -5,6 +5,7 @@ import axios from 'axios';
 import numberWithCommas from './NumberWithCommas';
 import { toPng } from 'html-to-image';
 import { useSetting } from '../../context/SettingContextProvider';
+import { IMAGE } from '../../config/image';
 const { ipcRenderer } = window.electron
 
 const VoucherView = ({ data, print, setPrint }) => {
@@ -108,16 +109,16 @@ const VoucherView = ({ data, print, setPrint }) => {
                     <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }} className='mb-2'>
                         <img
                             src={
-                                profile.profileimage
+                                profile?.profileimage
                                     ? axios.defaults.baseURL + profile.profileimage
-                                    : I.profile
+                                    : IMAGE.app_icon
                             }
                             style={{ width: 90, height: 90, alignSelf: 'center' }}
                         />
-                        <p style={{ fontWeight: 'bold' }}>{profile.name}</p>
-                        <p>{profile.email}</p>
-                        <p style={{ textAlign: 'center' }}>{profile.phoneno}</p>
-                        <p style={{ textAlign: 'center' }}>{profile.address}</p>
+                        <p style={{ fontWeight: 'bold' }}>{profile?.name}</p>
+                        <p>{profile?.email}</p>
+                        <p style={{ textAlign: 'center' }}>{profile?.phoneno}</p>
+                        <p style={{ textAlign: 'center' }}>{profile?.address}</p>
                     </div>
                     <div className="border w-full h-[3px] bg-black" />
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
