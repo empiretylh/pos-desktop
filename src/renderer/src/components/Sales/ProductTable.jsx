@@ -117,7 +117,7 @@ const ProductTable = ({ data, searchtext = '', sortby = 'name', selectedProduct,
     };
 
     useEffect(()=>{
-        setSelectProduct(filterData[selectedRow])
+        if(filterData)setSelectProduct(filterData[selectedRow])
     },[selectedRow, searchtext, cart])
 
     const defaultdata = generateRandomData(10);

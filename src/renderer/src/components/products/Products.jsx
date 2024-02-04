@@ -170,7 +170,11 @@ const Products = () => {
       supplier_name: form.supplier.value,
       expiry_date: form.expire.value,
       description: form.description.value,
-      pic: form.pic.files[0],
+      pic: form.pic?.files[0],
+    }
+
+    if(!isImageServer){
+      formData.pic = null;
     }
 
     if(!isAdmin){

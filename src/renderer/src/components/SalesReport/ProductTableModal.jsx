@@ -129,7 +129,7 @@ const ProductTableModal = ({ show, setShow, sortby = 'name', selectedProduct, se
     }, [show])
 
     useEffect(() => {
-        setSelectProduct(filterData[selectedRow])
+        if(filterData)setSelectProduct(filterData[selectedRow])
     }, [selectedRow, searchtext, cart])
 
     // press esc to close modal

@@ -1,5 +1,5 @@
-appId: com.perfect.solution
-productName: Perfect Solution
+appId: com.empire.rapidretail
+productName: Rapid Retail
 directories:
   buildResources: build
 files:
@@ -11,7 +11,7 @@ files:
 asarUnpack:
   - resources/**
 win:
-  executableName: Perfect Solution
+  executableName: Rapid Retail
 nsis:
   artifactName: ${name}-${version}-setup.${ext}
   shortcutName: ${productName}

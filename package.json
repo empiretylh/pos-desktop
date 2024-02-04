@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "description": "POS Desktop Application",
   "main": "./out/main/index.js",
-  "author": "Perfect Solution",
-  "homepage": "https://perfectsolution.github.io/pos-desktop",
+  "author": "Rapid Retail",
+  "homepage": "https://rapidretail.github.io",
   "scripts": {
     "format": "prettier --write .",
     "lint": "eslint . --ext .js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix",

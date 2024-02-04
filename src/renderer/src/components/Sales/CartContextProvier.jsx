@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useEffect, useMemo } from 'react'
 
 export const CartContext = React.createContext()
 
@@ -248,11 +248,24 @@ export const CartContextProvider = ({ children }) => {
   }
 
   const removeSale = (index)=>{
-    let newSales = [...sales]
-    newSales.splice(index, 1)
-    setSales(newSales)
-    setSSI(0)
+    console.log(sales.length, index, "removeSale")
+    if(sales.length == 1 || index == 0){
+      return;
+    }else{
+      let newSales = [...sales]
+      newSales.splice(index, 1)
+      setSales(newSales)
+      setSSI(0)
+    }
+   
   }
+
+  // if sales is null or empty then add new sales
+  useEffect(() => {
+    if (sales.length == 0) {
+      newSales()
+    }
+  }, [sales])
 
 
   return (
