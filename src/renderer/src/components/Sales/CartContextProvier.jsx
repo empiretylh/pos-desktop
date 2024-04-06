@@ -118,7 +118,8 @@ export const CartContextProvider = ({ children }) => {
   const [sales, setSales] = React.useState([[]])
   const [total, setTotal] = React.useState(0)
   const [totalItems, setTotalItems] = React.useState(0)
-  const [SSI, setSSI] = React.useState(0)
+  const [SSI, setSSI] = React.useState(0);
+  const [cpriceclick, setCPriceClick] = React.useState([])
 
   const addToCart = (product, salesIndex = 0) => {
     //clone product first
@@ -127,11 +128,78 @@ export const CartContextProvider = ({ children }) => {
     a.defaultQty = a.qty
     a.qty = 1
     a.total = a.price * a.qty
+
     let newSales = [...sales]
     newSales[salesIndex] = [...newSales[salesIndex], a]
 
     setSales(newSales)
   }
+
+  const changePrice = (salesIndex,_,__) => {
+    let newSales = [...sales]
+   
+    
+    // newSales[salesIndex][newSales[salesIndex].length - 1];
+    let p = newSales[salesIndex][newSales[salesIndex].length - 1];
+    // //cpriceclick filter this product
+    let cprice = cpriceclick.filter((item) => item?.id == p?.id)
+
+      console.log(cprice.length);
+    if(cprice.length == 0){
+      p?.extraprice.push({extraprice: p.price});
+
+      console.log(p?.extraprice)
+    }
+
+    setCPriceClick(prevCPriceClick => {
+      // Perform some operation with prevCPriceClick
+      let newCPriceClick = [...prevCPriceClick];
+      newCPriceClick.push({ id: p?.id });
+
+      return newCPriceClick;
+    });
+
+     let position = cprice.length % p?.extraprice.length;
+     let total = p?.extraprice[position].extraprice * p?.qty;
+
+    p.price = p?.extraprice[position].extraprice;
+    p.total = total;
+    newSales[salesIndex][newSales[salesIndex].length - 1] = p;
+
+
+    // // p.price = p?.extraprice[0].extraprice;
+
+    // // newSales[salesIndex][newSales[salesIndex].length - 1] = p;
+    // salesIndex
+    setSales(newSales)
+    
+
+  };
+
+  const changePricebyProduct = (salesIndex, p)=>{
+    let newSales = [...sales]
+    let cprice = cpriceclick.filter((item) => item?.id == p?.id)
+    if(cprice.length == 0){
+      p?.extraprice.push({extraprice: p.price});
+    }
+    setCPriceClick(prevCPriceClick => {
+      let newCPriceClick = [...prevCPriceClick];
+      newCPriceClick.push({ id: p?.id });
+      return newCPriceClick;
+    });
+    let position = cprice.length % p?.extraprice.length;
+    let total = p?.extraprice[position].extraprice * p?.qty;
+    p.price = p?.extraprice[position].extraprice;
+    p.total = total;
+    newSales[salesIndex] =  newSales[salesIndex].map((item) => {
+      if (item.id === p.id) {
+        item = p;
+      }
+      return item;
+    });
+    setSales(newSales)
+  }
+
 
   const removeFromCart = (product, salesIndex = 0) => {
     let newSales = [...sales]
@@ -143,6 +211,7 @@ export const CartContextProvider = ({ children }) => {
     let product = { ...p }
     let newSales = [...sales]
     newSales[salesIndex] = newSales[salesIndex].map((item) => {
+      console.log(item)
       if (item.id === product.id) {
         item.qty = parseInt(item.qty) + 1
         item.total = item.price * item.qty
@@ -205,29 +274,29 @@ export const CartContextProvider = ({ children }) => {
   const calculateTotal = (salesIndex = SSI) => {
     let total = 0
     let totalItems = 0
-      sales[salesIndex]?.forEach((item) => {
-        total += parseInt(item.price) * parseInt(item.qty)
-        totalItems += 1
-      })
+    sales[salesIndex]?.forEach((item) => {
+      total += parseInt(item.price) * parseInt(item.qty)
+      totalItems += 1
+    })
     setTotal(total)
     setTotalItems(totalItems)
   }
 
-//   const calculateTotal = useMemo(() => {
-//     let total = 0
-//     let totalItems = 0
-//     sales[SSI].forEach((item) => {
-//         total += parseInt(item.price) * parseInt(item.qty)
-//         totalItems += 1
-//         })
-//     setTotal(total)
-//     setTotalItems(totalItems)
+  //   const calculateTotal = useMemo(() => {
+  //     let total = 0
+  //     let totalItems = 0
+  //     sales[SSI].forEach((item) => {
+  //         total += parseInt(item.price) * parseInt(item.qty)
+  //         totalItems += 1
+  //         })
+  //     setTotal(total)
+  //     setTotalItems(totalItems)
 
-//   }, [sales, SSI])
+  //   }, [sales, SSI])
 
   React.useEffect(() => {
     calculateTotal()
-  }, [sales , SSI])
+  }, [sales, SSI])
 
   const cart = useMemo(() => {
     return sales[SSI]
@@ -237,17 +306,17 @@ export const CartContextProvider = ({ children }) => {
     setSales(newSales)
   }
 
-//   return index
+  //   return index
 
-  const  newSales = ()=>{
+  const newSales = () => {
     let newSales = [...sales]
     newSales.push([])
     setSales(newSales)
-    setSSI(newSales.length-1)
-    return newSales.length-1;
+    setSSI(newSales.length - 1)
+    return newSales.length - 1;
   }
 
-  const removeSale = (index)=>{
+  const removeSale = (index) => {
     let newSales = [...sales]
     newSales.splice(index, 1)
     setSales(newSales)
@@ -275,6 +344,8 @@ export const CartContextProvider = ({ children }) => {
         setSSI,
         newSales,
         removeSale,
+        changePrice,
+        changePricebyProduct
       }}
     >
       {children}

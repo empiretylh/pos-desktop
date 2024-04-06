@@ -35,7 +35,7 @@ const Sales = () => {
   const [selectedProduct, setSelectetProduct] = useState(null)
   const [selectedRow_category, setSelectedRow_category] = useState(null)
 
-  const { sales, addToCart, removeFromCart, clearCart, cart, SSI, setSSI, newSales, removeSale } =
+  const { sales, addToCart, removeFromCart, clearCart, cart, SSI, setSSI, newSales, removeSale, setSales,changePrice } =
     useCart()
 
   const inputRef = useRef()
@@ -52,6 +52,8 @@ const Sales = () => {
   const [selectedCategory, setSelectedCategory] = useState('All')
   const searchref = useRef()
 
+  
+
   //if user press alt + f then focus on search input
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -66,6 +68,20 @@ const Sales = () => {
       window.removeEventListener('keydown', handleKeyDown)
     }
   }, [])
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if(e.key === 'F10'){
+        changePrice(SSI,'','');
+      }
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [SSI, sales, cart])
 
   // press f5 to refersh data from server
 
@@ -83,6 +99,8 @@ const Sales = () => {
       if(e.ctrlKey && e.key >= '1' && e.key <= '9'){
         setSSI(parseInt(e.key) - 1);
       }
+
+     
 
     }
 
@@ -142,10 +160,13 @@ const Sales = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
                     if (selectedProduct) {
-                      addToCart(selectedProduct)
+                      addToCart(selectedProduct,SSI)
                       setSearchtext('')
                       searchref.current.value = ''
                     }
+                  }
+                  if(e.key === 'F10'){
+                    changePrice(SSI,'','');
                   }
                 }}
                 type="text"

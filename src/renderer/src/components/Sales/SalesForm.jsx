@@ -27,7 +27,7 @@ const SalesForm = () => {
     const [customername, setCustomername] = useState('');
     const [customershow, setCustomerShow] = useState(false);
 
-    const { sales, cart, plusQty, minusQty, editQty, priceEdit, total, setCart, SSI, removeSale } = useCart();
+    const { sales, cart, plusQty, minusQty, editQty, priceEdit, total, setCart, SSI, removeSale,changePricebyProduct } = useCart();
     const { data: customerdata, customer_data } = useCustomerData();
     const { product_data } = useProductsData();
     const { showInfo, showNoti } = useAlertShow();
@@ -328,6 +328,9 @@ const SalesForm = () => {
                                                     <i className="bi bi-pencil-square text-xl ml-2 cursor-pointer" onClick={() => setIsEditing(true)}></i>
                                                 </>
                                             }
+                                            
+                                            <i className="bi bi-arrow-left-right text-xl ml-2 cursor-pointer" onClick={() => changePricebyProduct(SSI, item)}></i>
+                                            
                                         </div>
 
                                     </div>

@@ -156,6 +156,16 @@ const Products = () => {
       //selectedRow remove pic
       if(!isImageServer) delete selectedRow.pic
 
+      if(selectedRow.price && selectedRow.price.includes(',')){
+
+        let price = selectedRow.price.slice(0, selectedRow.price.indexOf(','));
+        let extraprice = selectedRow.price.slice(selectedRow.price.indexOf(',') + 1, selectedRow.price.length);
+
+        selectedRow.price = price;
+        selectedRow.extraprice = extraprice;
+      }
+
+
       return PutProduct.mutate(selectedRow)
     }
 
@@ -172,12 +182,27 @@ const Products = () => {
       expiry_date: form.expire.value,
       description: form.description.value,
       pic: form.pic.files[0],
+      extraprice:0
     }
 
     if(!isAdmin){
         formData.cost = 0;
         formData.description = '#cashier \n' + formData.description; 
     }
+
+    if(form.price.value.includes(',')){
+  
+      let price = form.price.value.slice(0, form.price.value.indexOf(','));
+      let extraprice = form.price.value.slice(form.price.value.indexOf(',') + 1, form.price.value.length);
+      
+      formData.price = price;
+      formData.extraprice = extraprice;      
+    
+    }else{
+      formData.price = form.price.value;
+      formData.extraprice = [];
+    }
+
 
     let data = {}
 
@@ -187,6 +212,7 @@ const Products = () => {
       }
     }
 
+    
     PostProduct.mutate(data)
 
     clearProductForm();
@@ -223,7 +249,11 @@ const Products = () => {
   const productRowClick_Update = (item) => {
     if (!isAdmin) return
     productform.current.reset()
-    setSelectedRow(item)
+    let newitem = { ...item }
+    if(item.price && item.extraprice.length > 0){
+      newitem.price =  item.price + ','+ item?.extraprice.map(e => e.extraprice)
+    }
+    setSelectedRow(newitem)
     inputRef.current.focus()
     //selectall text input
     inputRef.current.select()
@@ -466,7 +496,7 @@ const Products = () => {
                     <input
                       value={selectedRow?.price}
                       onChange={(e) => handleChange(e.target.value, e.target.id)}
-                      type="number"
+                      type="text"
                       className="border border-gray-300 rounded-md w-full p-2 my-1"
                       placeholder={t('Price4')}
                       required
