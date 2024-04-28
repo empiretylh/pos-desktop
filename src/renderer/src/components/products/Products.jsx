@@ -23,6 +23,7 @@ import ProductTable from './ProductTable'
 import ProductsByCategoryView from './ProductsByCategoryView'
 import { useUserType } from '../../context/UserTypeProvider'
 import { isImageServer } from '../../config/config'
+import { useSupplierData } from '../../context/SupplierProvider'
 const { ipcRenderer } = window.electron
 
 const Products = () => {
@@ -42,10 +43,14 @@ const Products = () => {
   const { product_data, data } = useProductsData()
   const { category_data, data: category } = useCategoryData()
 
+  const { supplier_data, data: suppliers } = useSupplierData();
+
   const { isAdmin } = useUserType()
 
   const [selectedRow, setSelectedRow] = useState(null)
   const [selectedRow_category, setSelectedRow_category] = useState(null)
+  const [suppliertext, setSuppliertext] = useState('')
+  const [showSupplier, setShowSupplier] = useState(false);
 
   const inputRef = useRef()
   const searchRef = useRef()
@@ -60,6 +65,7 @@ const Products = () => {
       setLoading(false)
       showNoti('Product Added Successfully')
       product_data.refetch()
+      supplier_data.refetch()
       clearProductForm();
     },
     onError: () => {
@@ -154,9 +160,9 @@ const Products = () => {
     //if selectedRow is not null putproduct else postproduct
     if (selectedRow?.id) {
       //selectedRow remove pic
-      if(!isImageServer) delete selectedRow.pic
+      if (!isImageServer) delete selectedRow.pic
 
-      if(selectedRow.price && selectedRow.price.includes(',')){
+      if (selectedRow.price && selectedRow.price.includes(',')) {
 
         let price = selectedRow.price.slice(0, selectedRow.price.indexOf(','));
         let extraprice = selectedRow.price.slice(selectedRow.price.indexOf(',') + 1, selectedRow.price.length);
@@ -182,23 +188,23 @@ const Products = () => {
       expiry_date: form.expire.value,
       description: form.description.value,
       pic: form.pic.files[0],
-      extraprice:0
+      extraprice: 0
     }
 
-    if(!isAdmin){
-        formData.cost = 0;
-        formData.description = '#cashier \n' + formData.description; 
+    if (!isAdmin) {
+      formData.cost = 0;
+      formData.description = '#cashier \n' + formData.description;
     }
 
-    if(form.price.value.includes(',')){
-  
+    if (form.price.value.includes(',')) {
+
       let price = form.price.value.slice(0, form.price.value.indexOf(','));
       let extraprice = form.price.value.slice(form.price.value.indexOf(',') + 1, form.price.value.length);
-      
+
       formData.price = price;
-      formData.extraprice = extraprice;      
-    
-    }else{
+      formData.extraprice = extraprice;
+
+    } else {
       formData.price = form.price.value;
       formData.extraprice = [];
     }
@@ -212,7 +218,7 @@ const Products = () => {
       }
     }
 
-    
+
     PostProduct.mutate(data)
 
     clearProductForm();
@@ -250,8 +256,8 @@ const Products = () => {
     if (!isAdmin) return
     productform.current.reset()
     let newitem = { ...item }
-    if(item.price && item.extraprice.length > 0){
-      newitem.price =  item.price + ','+ item?.extraprice.map(e => e.extraprice)
+    if (item.price && item.extraprice.length > 0) {
+      newitem.price = item.price + ',' + item?.extraprice.map(e => e.extraprice)
     }
     setSelectedRow(newitem)
     inputRef.current.focus()
@@ -360,10 +366,43 @@ const Products = () => {
     }
   }, [selectedRow])
 
+  const SupplierModal = () => {
+    if (!showSupplier) return null;
+    return (
+      <div className="fixed z-50 top-0 left-0 w-full h-full bg-gray-900 bg-opacity-50 flex justify-center items-center">
+        <div className="bg-white w-1/3 h-1/2 p-3 rounded-md">
+          <div className="flex flex-row items-center">
+            <h1 className="text-2xl font-bold">{t('Supplier')}</h1>
+            <div className="ml-auto">
+              <i onClick={() => setShowSupplier(false)} className="bi bi-x text-2xl cursor-pointer"></i>
+            </div>
+          </div>
+          <div className="flex flex-col mt-3 max-h-[90%] " style={{
+            overflow:'auto'
+          }}>
+            {suppliers?.map((item)=>
+              <button onClick={() => {
+                setSuppliertext(item.name)
+                setShowSupplier(false);
+                handleChange(item.name, 'supplier')
+              }} className={`border border-gray-300 rounded-md w-full p-2 my-1 ${item.name == suppliertext ? 'bg-green-400':''} bg-white`}>
+                {item.name}
+              </button>
+
+            )
+
+            }
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="flex flex-row h-screen">
       <Navigation />
       <Loading show={loading} />
+      <SupplierModal />
       <div className="bg-white font-sans h-full w-full p-3 overflow-auto">
         <div
           className="flex flex-row items-center sticky bg-white "
@@ -524,14 +563,21 @@ const Products = () => {
                     <label className="text-sm text-black font-bold mt-1">
                       {t('Supplier_Name')}
                     </label>
-                    <input
-                      type="text"
-                      value={selectedRow?.supplier}
-                      onChange={(e) => handleChange(e.target.value, e.target.id)}
-                      className="border border-gray-300 rounded-md w-full p-2  my-1"
-                      placeholder={t('Supplier_Name')}
-                      id="supplier"
-                    />
+                    <div className='flex flex-row items-center gap-2'>
+                      <input
+                        type="text"
+                        value={selectedRow?.supplier || suppliertext}
+                        onChange={(e) => handleChange(e.target.value, e.target.id)}
+                        className="border border-gray-300 rounded-md w-full p-2  my-1"
+                        placeholder={t('Supplier_Name')}
+                        id="supplier"
+                      />
+                      <div>
+                        <icon onClick={() => setShowSupplier(true)} className="bi bi-person text-2xl text-black mr-2 cursor-pointer"></icon>
+                      </div>
+                    </div>
+
+
                   </>
                 )}
                 {/*Expire Date */}
@@ -557,35 +603,33 @@ const Products = () => {
                 />
 
                 {isImageServer ?
-                <>
-                <label className="text-sm text-black font-bold mt-1">{t('Image')}</label>
-                <input
-                  type="file"
-                  onChange={(e) => {
-                    handleChange(e.target.files[0], e.target.id)
-                  }
-                  }
-                  className="border border-gray-300 rounded-md w-full p-2  my-1"
-                  placeholder={t('Image')}
-                  id="pic"
-                />
-                </>
-                
-              :null}
+                  <>
+                    <label className="text-sm text-black font-bold mt-1">{t('Image')}</label>
+                    <input
+                      type="file"
+                      onChange={(e) => {
+                        handleChange(e.target.files[0], e.target.id)
+                      }
+                      }
+                      className="border border-gray-300 rounded-md w-full p-2  my-1"
+                      placeholder={t('Image')}
+                      id="pic"
+                    />
+                  </>
+
+                  : null}
 
                 <button
                   type="submit"
-                  className={`${
-                    selectedRow?.id
-                      ? 'bg-green-800 hover:bg-green-900'
-                      : 'bg-primary hover:bg-cyan-800   '
-                  } text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}
+                  className={`${selectedRow?.id
+                    ? 'bg-green-800 hover:bg-green-900'
+                    : 'bg-primary hover:bg-cyan-800   '
+                    } text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}
                 >
                   {/* add icon and edit icon  */}
                   <i
-                    className={`bi ${
-                      selectedRow?.id ? 'bi-pencil-square' : 'bi-plus-square'
-                    } text-white mr-2`}
+                    className={`bi ${selectedRow?.id ? 'bi-pencil-square' : 'bi-plus-square'
+                      } text-white mr-2`}
                   ></i>
 
                   {t(selectedRow?.id ? 'Edit_Product' : 'Add_Product')}
@@ -640,17 +684,15 @@ const Products = () => {
 
                 <button
                   type="submit"
-                  className={`${
-                    selectedRow_category?.id && isAdmin
-                      ? 'bg-green-800 hover:bg-green-900'
-                      : 'bg-primary hover:bg-cyan-800   '
-                  } text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}
+                  className={`${selectedRow_category?.id && isAdmin
+                    ? 'bg-green-800 hover:bg-green-900'
+                    : 'bg-primary hover:bg-cyan-800   '
+                    } text-white font-bold rounded-md w-full p-2 mr-3 mt-1 flex flex-row items-center justify-center`}
                 >
                   {/* add icon and edit icon  */}
                   <i
-                    className={`bi ${
-                      selectedRow_category?.id && isAdmin ? 'bi-pencil-square' : 'bi-plus-square'
-                    } text-white mr-2`}
+                    className={`bi ${selectedRow_category?.id && isAdmin ? 'bi-pencil-square' : 'bi-plus-square'
+                      } text-white mr-2`}
                   ></i>
 
                   {t(selectedRow_category?.id && isAdmin ? 'Update' : 'Add_Category')}
@@ -692,9 +734,8 @@ const Products = () => {
               {/* 2 tab Sales and Category if selected fill color */}
               <div className="flex flex-row items-center mt-3">
                 <button
-                  className={`border border-gray-300 ${
-                    selected == 'Products' ? 'bg-primary text-white font-bold' : ''
-                  } rounded-md w-1/2 p-2 mr-3`}
+                  className={`border border-gray-300 ${selected == 'Products' ? 'bg-primary text-white font-bold' : ''
+                    } rounded-md w-1/2 p-2 mr-3`}
                   onClick={() => {
                     setSelected('Products')
                   }}
@@ -705,9 +746,8 @@ const Products = () => {
                   onClick={() => {
                     setSelected('Category')
                   }}
-                  className={`border border-gray-300 ${
-                    selected == 'Category' ? 'bg-primary text-white font-bold' : ''
-                  } rounded-md w-1/2 p-2 mr-3`}
+                  className={`border border-gray-300 ${selected == 'Category' ? 'bg-primary text-white font-bold' : ''
+                    } rounded-md w-1/2 p-2 mr-3`}
                 >
                   {t('Category')}
                 </button>
