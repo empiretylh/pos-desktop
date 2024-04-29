@@ -187,8 +187,11 @@ const Products = () => {
       supplier_name: form.supplier.value,
       expiry_date: form.expire.value,
       description: form.description.value,
-      pic: form.pic.files[0],
       extraprice: 0
+    }
+
+    if (isImageServer) {
+      formData.pic = form.pic.files[0]
     }
 
     if (!isAdmin) {
@@ -378,14 +381,14 @@ const Products = () => {
             </div>
           </div>
           <div className="flex flex-col mt-3 max-h-[90%] " style={{
-            overflow:'auto'
+            overflow: 'auto'
           }}>
-            {suppliers?.map((item)=>
+            {suppliers?.map((item) =>
               <button onClick={() => {
                 setSuppliertext(item.name)
                 setShowSupplier(false);
                 handleChange(item.name, 'supplier')
-              }} className={`border border-gray-300 rounded-md w-full p-2 my-1 ${item.name == suppliertext ? 'bg-green-400':''} bg-white`}>
+              }} className={`border border-gray-300 rounded-md w-full p-2 my-1 ${item.name == suppliertext ? 'bg-green-400' : ''} bg-white`}>
                 {item.name}
               </button>
 
