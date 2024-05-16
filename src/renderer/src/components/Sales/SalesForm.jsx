@@ -27,7 +27,7 @@ const SalesForm = () => {
     const [customername, setCustomername] = useState('');
     const [customershow, setCustomerShow] = useState(false);
 
-    const { sales, cart, plusQty, minusQty, editQty, priceEdit, total, setCart, SSI, removeSale,changePricebyProduct } = useCart();
+    const { sales, cart, plusQty, minusQty, editQty, priceEdit, total, setCart, SSI,newSales, removeSale,clearCart,changePricebyProduct } = useCart();
     const { data: customerdata, customer_data } = useCustomerData();
     const { product_data } = useProductsData();
     const { showInfo, showNoti } = useAlertShow();
@@ -116,7 +116,9 @@ const SalesForm = () => {
                 IsPrint = false;
             }
             setLoading(false);
-            removeSale(SSI);
+            // removeSale(SSI);
+            // setCart([], SSI)
+            clearCart(SSI)
             setCustomername('')
             setTax(0)
             setDescription('')
@@ -206,7 +208,6 @@ const SalesForm = () => {
 
         CreateReceipt.mutate(data)
 
-        setCart([])
         setCustomername('')
         setTax(0)
         setDescription('')
