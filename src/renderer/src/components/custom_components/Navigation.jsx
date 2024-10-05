@@ -70,7 +70,7 @@ const Navigation = () => {
 
     let nav = adminnav;
     if(!isAdmin){
-        nav = [adminnav[2]].concat(adminnav.filter((item)=>item.name !== 'Dashboard' &&  item.name !== 'Report'  &&  item.name !== 'Sales'));
+        nav = [adminnav[2]].concat(adminnav.filter((item)=>item.name !== 'Dashboard' &&  item.name !== 'Report'  &&  item.name !== 'Sales' && item.name !== 'Supplier'));
     };
 
 
