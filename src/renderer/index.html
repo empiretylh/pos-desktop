@@ -10,6 +10,25 @@
 
   <body>
     <div id="root"></div>
+    <div id="connection-status" style="position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; background-color: red; display: none; color:white; text-align: center;">
+      No Internet Connection!
+    </div>
     <script type="module" src="/src/main.jsx"></script>
+    <script>
+      const connectionStatus = document.getElementById('connection-status');
+
+      const updateConnectionStatus = () => {
+        if (navigator.onLine) {
+          connectionStatus.style.display = 'none';
+        } else {
+          connectionStatus.style.display = 'block';
+        }
+      };
+
+      window.addEventListener('online', updateConnectionStatus);
+      window.addEventListener('offline', updateConnectionStatus);
+
+      updateConnectionStatus();
+    </script>
   </body>
 </html>

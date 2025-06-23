@@ -70,7 +70,7 @@ const Navigation = () => {
 
     let nav = adminnav;
     if(!isAdmin){
-        nav = [adminnav[2]].concat(adminnav.filter((item)=>item.name !== 'Dashboard' &&  item.name !== 'Report'  &&  item.name !== 'Sales' && item.name !== 'Supplier'));
+        nav = adminnav.filter((item) => item.name === 'Sales' || item.name === 'Report');
     };
 
 
@@ -109,6 +109,21 @@ const Navigation = () => {
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [location.pathname]);
+
+    const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+
+    React.useEffect(() => {
+        const handleOnline = () => setIsOnline(true);
+        const handleOffline = () => setIsOnline(false);
+
+        window.addEventListener('online', handleOnline);
+        window.addEventListener('offline', handleOffline);
+
+        return () => {
+            window.removeEventListener('online', handleOnline);
+            window.removeEventListener('offline', handleOffline);
+        };
+    }, []);
 
     return (
         <div
@@ -151,6 +166,9 @@ const Navigation = () => {
                     <p className={"text-[11px]"}>{"Settings"}</p>
                 </Link>
             </ul>
+            {isOnline === false && (
+                <div className="absolute bottom-0 left-0 w-full h-2 bg-red-500"></div>
+            )}
         </div>
     );
 };
